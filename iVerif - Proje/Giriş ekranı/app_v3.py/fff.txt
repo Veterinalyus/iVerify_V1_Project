@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+iVerify v3
+</title>
+
+
+<style>
+
+
+*{
+
+box-sizing:border-box;
+
+margin:0;
+
+padding:0;
+
+font-family:Arial, Helvetica, sans-serif;
+
+}
+
+
+
+body{
+
+background:#0f172a;
+
+color:#f8fafc;
+
+min-height:100vh;
+
+}
+
+
+
+.container{
+
+width:95%;
+
+max-width:1400px;
+
+margin:auto;
+
+padding:25px;
+
+}
+
+
+
+.header{
+
+text-align:center;
+
+margin-bottom:30px;
+
+}
+
+
+
+.header h1{
+
+font-size:42px;
+
+}
+
+
+
+.header p{
+
+color:#94a3b8;
+
+margin-top:10px;
+
+}
+
+
+
+
+.card{
+
+background:#1e293b;
+
+border-radius:16px;
+
+padding:25px;
+
+margin-bottom:20px;
+
+border:1px solid #334155;
+
+}
+
+
+
+
+button{
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:10px 18px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+opacity:.85;
+
+}
+
+
+
+
+
+.upload{
+
+border:2px dashed #475569;
+
+padding:40px;
+
+text-align:center;
+
+border-radius:15px;
+
+cursor:pointer;
+
+}
+
+
+
+.upload input{
+
+display:none;
+
+}
+
+
+
+
+
+.dashboard{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+gap:15px;
+
+}
+
+
+
+
+.stat{
+
+background:#111827;
+
+padding:20px;
+
+border-radius:12px;
+
+text-align:center;
+
+}
+
+
+
+.stat h2{
+
+font-size:32px;
+
+}
+
+
+
+.stat span{
+
+color:#94a3b8;
+
+}
+
+
+
+
+.toolbar{
+
+display:flex;
+
+gap:10px;
+
+flex-wrap:wrap;
+
+margin-bottom:20px;
+
+}
+
+
+
+.search{
+
+flex:1;
+
+min-width:250px;
+
+padding:12px;
+
+border-radius:8px;
+
+border:1px solid #334155;
+
+background:#111827;
+
+color:white;
+
+}
+
+
+
+select{
+
+padding:12px;
+
+border-radius:8px;
+
+background:#111827;
+
+color:white;
+
+border:1px solid #334155;
+
+}
+
+
+
+
+.categories{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:10px;
+
+margin-bottom:20px;
+
+}
+
+
+
+.category.active{
+
+background:#2563eb;
+
+}
+
+
+
+
+.user-list{
+
+margin-top:20px;
+
+}
+
+
+
+.user-row{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:15px;
+
+border-bottom:1px solid #334155;
+
+}
+
+
+
+.profile{
+
+background:#2563eb;
+
+padding:7px 12px;
+
+border-radius:7px;
+
+color:white;
+
+text-decoration:none;
+
+}
+
+
+
+
+
+.pagination{
+
+display:flex;
+
+justify-content:center;
+
+gap:10px;
+
+margin-top:20px;
+
+}
+
+
+
+
+.hidden{
+
+display:none;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="container">
+
+
+
+<div class="header">
+
+<h1>
+iVerify
+</h1>
+
+<p>
+Instagram Meta Analiz Motoru v3
+</p>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h2>
+Meta ZIP Analizi
+</h2>
+
+
+<br>
+
+
+<label class="upload">
+
+
+<input
+
+type="file"
+
+id="zipFile"
+
+accept=".zip"
+
+/>
+
+
+ZIP dosyasını seç
+
+
+</label>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div id="loading" class="card hidden">
+
+
+<h3>
+Analiz yapılıyor...
+</h3>
+
+
+<p>
+Meta verileri okunuyor.
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<div id="dashboard" class="card hidden">
+
+
+<h2>
+Genel Durum
+</h2>
+
+
+<br>
+
+
+<div class="dashboard">
+
+
+<div class="stat">
+
+<h2 id="followers">
+0
+</h2>
+
+<span>
+Takipçi
+</span>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<h2 id="following">
+0
+</h2>
+
+<span>
+Takip Edilen
+</span>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<h2 id="mutual">
+0
+</h2>
+
+<span>
+Ortak
+</span>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<h2 id="pending">
+0
+</h2>
+
+<span>
+Bekleyen
+</span>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div id="users" class="card hidden">
+
+
+<h2>
+Kullanıcı Analizi
+</h2>
+
+
+<br>
+
+
+
+
+<div class="categories">
+
+
+<button class="category active" data-type="mutual">
+
+Ortak
+
+</button>
+
+
+<button class="category" data-type="not_following_back">
+
+Ben takip ediyorum
+
+</button>
+
+
+<button class="category" data-type="only_followers">
+
+Beni takip ediyor
+
+</button>
+
+
+<button class="category" data-type="pending_requests">
+
+Bekleyen
+
+</button>
+
+
+<button class="category" data-type="received_requests">
+
+Gelen İstek
+
+</button>
+
+
+<button class="category" data-type="recently_unfollowed">
+
+Takipten çıkan
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+<div class="toolbar">
+
+
+<input
+
+id="search"
+
+class="search"
+
+placeholder="Kullanıcı ara..."
+
+>
+
+
+
+<select id="sort">
+
+<option value="default">
+Sıralama
+</option>
+
+
+<option value="az">
+A-Z
+</option>
+
+
+<option value="za">
+Z-A
+</option>
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+<div id="userList" class="user-list">
+
+
+</div>
+
+
+
+
+
+<div class="pagination">
+
+
+<button id="prev">
+
+Önceki
+
+</button>
+
+
+<span id="page">
+
+1
+
+</span>
+
+
+<button id="next">
+
+Sonraki
+
+</button>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+<script>
+
+
+// =====================================================
+// iVerify Interface v3
+// PART 2
+// API + LIST ENGINE
+// =====================================================
+
+
+
+const API_URL = "http://127.0.0.1:5000";
+
+
+
+let analysisData = null;
+
+
+let currentUsers = [];
+
+
+let currentPage = 1;
+
+
+let pageSize = 50;
+
+
+let currentCategory = "mutual";
+
+
+
+
+
+
+// -----------------------------------------------------
+// ZIP UPLOAD
+// -----------------------------------------------------
+
+
+
+document
+
+.getElementById("zipFile")
+
+.addEventListener(
+
+"change",
+
+function(e){
+
+
+    if(e.target.files.length){
+
+
+        uploadZip(
+
+            e.target.files[0]
+
+        );
+
+
+    }
+
+
+}
+
+);
+
+
+
+
+
+
+
+async function uploadZip(file){
+
+
+
+    let formData = new FormData();
+
+
+
+    formData.append(
+
+        "file",
+
+        file
+
+    );
+
+
+
+
+
+    document
+
+    .getElementById("loading")
+
+    .classList
+
+    .remove("hidden");
+
+
+
+
+
+
+    try{
+
+
+        let response = await fetch(
+
+            API_URL +
+
+            "/api/analyze",
+
+            {
+
+                method:"POST",
+
+                body:formData
+
+            }
+
+        );
+
+
+
+
+
+        let result = await response.json();
+
+
+
+
+
+        if(result.success){
+
+
+            analysisData = result.data;
+
+
+
+            showDashboard();
+
+
+
+        }
+
+        else{
+
+
+            alert(
+
+                result.error
+
+            );
+
+
+        }
+
+
+
+
+
+    }
+
+    catch(error){
+
+
+
+        alert(
+
+            "Python motoruna bağlanılamadı"
+
+        );
+
+
+
+        console.log(error);
+
+
+
+    }
+
+
+
+    finally{
+
+
+        document
+
+        .getElementById("loading")
+
+        .classList
+
+        .add("hidden");
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// DASHBOARD
+// -----------------------------------------------------
+
+
+
+function showDashboard(){
+
+
+
+    document
+
+    .getElementById("dashboard")
+
+    .classList
+
+    .remove("hidden");
+
+
+
+
+    document
+
+    .getElementById("users")
+
+    .classList
+
+    .remove("hidden");
+
+
+
+
+
+
+    document
+
+    .getElementById("followers")
+
+    .innerText =
+
+    analysisData.stats.followers;
+
+
+
+
+
+
+    document
+
+    .getElementById("following")
+
+    .innerText =
+
+    analysisData.stats.following;
+
+
+
+
+
+
+    document
+
+    .getElementById("mutual")
+
+    .innerText =
+
+    analysisData.stats.mutual;
+
+
+
+
+
+
+    document
+
+    .getElementById("pending")
+
+    .innerText =
+
+    analysisData.stats.pending;
+
+
+
+
+
+
+    changeCategory(
+
+        "mutual"
+
+    );
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// CATEGORY CHANGE
+// -----------------------------------------------------
+
+
+
+document
+
+.querySelectorAll(".category")
+
+.forEach(
+
+button => {
+
+
+
+button.addEventListener(
+
+"click",
+
+function(){
+
+
+
+document
+
+.querySelectorAll(".category")
+
+.forEach(
+
+b =>
+
+b.classList.remove(
+
+"active"
+
+)
+
+);
+
+
+
+
+
+this.classList.add(
+
+"active"
+
+);
+
+
+
+
+
+changeCategory(
+
+this.dataset.type
+
+);
+
+
+
+}
+
+);
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+function changeCategory(type){
+
+
+
+currentCategory = type;
+
+
+
+currentPage = 1;
+
+
+
+
+
+currentUsers =
+
+analysisData.users[type]
+
+||
+
+[];
+
+
+
+
+
+renderUsers();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// USER LIST
+// -----------------------------------------------------
+
+
+
+function renderUsers(){
+
+
+
+let list =
+
+document
+
+.getElementById("userList");
+
+
+
+list.innerHTML = "";
+
+
+
+
+
+let text =
+
+document
+
+.getElementById("search")
+
+.value
+
+.toLowerCase();
+
+
+
+
+
+
+
+let users =
+
+currentUsers.filter(
+
+u =>
+
+
+
+u.username
+
+.toLowerCase()
+
+.includes(text)
+
+
+
+);
+
+
+
+
+
+
+
+
+let start =
+
+(currentPage-1)
+
+*
+
+pageSize;
+
+
+
+
+
+let end =
+
+start +
+
+pageSize;
+
+
+
+
+
+
+let pageUsers =
+
+users.slice(
+
+start,
+
+end
+
+);
+
+
+
+
+
+
+pageUsers.forEach(
+
+user => {
+
+
+
+let row =
+
+document.createElement(
+
+"div"
+
+);
+
+
+
+row.className =
+
+"user-row";
+
+
+
+
+
+row.innerHTML = `
+
+
+
+<span
+
+onclick="openUser('${user.username}')"
+
+>
+
+@${user.username}
+
+</span>
+
+
+
+
+<a
+
+class="profile"
+
+href="${user.url}"
+
+target="_blank"
+
+>
+
+Instagram
+
+</a>
+
+
+
+`;
+
+
+
+
+
+list.appendChild(
+
+row
+
+);
+
+
+
+}
+
+);
+
+
+
+document
+
+.getElementById("page")
+
+.innerText =
+
+currentPage;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// SEARCH
+// -----------------------------------------------------
+
+
+
+document
+
+.getElementById("search")
+
+.addEventListener(
+
+"input",
+
+function(){
+
+
+currentPage = 1;
+
+
+renderUsers();
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// PAGINATION
+// -----------------------------------------------------
+
+
+
+document
+
+.getElementById("next")
+
+.onclick = function(){
+
+
+
+currentPage++;
+
+
+
+renderUsers();
+
+
+
+};
+
+
+
+
+
+
+
+document
+
+.getElementById("prev")
+
+.onclick = function(){
+
+
+
+if(currentPage>1){
+
+
+
+currentPage--;
+
+
+
+renderUsers();
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// SORT
+// -----------------------------------------------------
+
+
+
+document
+
+.getElementById("sort")
+
+.addEventListener(
+
+"change",
+
+function(){
+
+
+
+if(this.value==="az"){
+
+
+
+currentUsers.sort(
+
+(a,b)=>
+
+a.username.localeCompare(
+
+b.username
+
+)
+
+);
+
+
+
+}
+
+
+
+
+
+if(this.value==="za"){
+
+
+
+currentUsers.sort(
+
+(a,b)=>
+
+b.username.localeCompare(
+
+a.username
+
+)
+
+);
+
+
+
+}
+
+
+
+
+
+renderUsers();
+
+
+
+}
+
+);
+
+
+
+
+
+</script>
+<!-- =====================================================
+iVerify Interface v3
+PART 3
+USER DETAIL + FINAL
+===================================================== -->
+
+
+
+<style>
+
+
+.modal{
+
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+right:0;
+
+bottom:0;
+
+background:rgba(0,0,0,.75);
+
+display:none;
+
+justify-content:center;
+
+align-items:center;
+
+
+}
+
+
+
+
+.modal-box{
+
+
+background:#1e293b;
+
+width:450px;
+
+padding:25px;
+
+border-radius:15px;
+
+border:1px solid #334155;
+
+
+}
+
+
+
+
+.modal-box h2{
+
+
+margin-bottom:20px;
+
+
+}
+
+
+
+
+.detail-row{
+
+
+padding:10px 0;
+
+border-bottom:1px solid #334155;
+
+color:#cbd5e1;
+
+
+}
+
+
+
+
+.close{
+
+
+background:#ef4444;
+
+margin-top:20px;
+
+
+}
+
+
+
+</style>
+
+
+
+
+
+
+
+<!-- USER MODAL -->
+
+
+<div
+
+id="userModal"
+
+class="modal"
+
+>
+
+
+
+<div class="modal-box">
+
+
+<h2>
+
+Kullanıcı Detayı
+
+</h2>
+
+
+
+
+<div
+
+id="dUsername"
+
+class="detail-row"
+
+>
+
+</div>
+
+
+
+
+<div
+
+id="dStatus"
+
+class="detail-row"
+
+>
+
+</div>
+
+
+
+
+<div
+
+id="dCategory"
+
+class="detail-row"
+
+>
+
+</div>
+
+
+
+
+<div
+
+id="dSource"
+
+class="detail-row"
+
+>
+
+</div>
+
+
+
+
+<div
+
+id="dDate"
+
+class="detail-row"
+
+>
+
+</div>
+
+
+
+
+
+<a
+
+id="dInstagram"
+
+class="profile"
+
+target="_blank"
+
+>
+
+Instagram Profili
+
+</a>
+
+
+
+
+
+<br>
+
+
+
+<button
+
+class="close"
+
+onclick="closeUser()"
+
+>
+
+Kapat
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<script>
+
+
+// =====================================================
+// USER DETAIL
+// =====================================================
+
+
+
+function openUser(username){
+
+
+
+let user =
+
+currentUsers.find(
+
+u =>
+
+u.username === username
+
+);
+
+
+
+
+if(!user)
+
+return;
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"dUsername"
+
+)
+
+.innerHTML =
+
+
+"<b>Kullanıcı:</b> @" +
+
+user.username;
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"dStatus"
+
+)
+
+.innerHTML =
+
+
+"<b>Durum:</b> " +
+
+(
+
+user.status
+
+||
+
+"Bilinmiyor"
+
+);
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"dCategory"
+
+)
+
+.innerHTML =
+
+
+"<b>Kategori:</b> " +
+
+currentCategory;
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"dSource"
+
+)
+
+.innerHTML =
+
+
+"<b>Kaynak:</b> " +
+
+(
+
+user.source
+
+||
+
+"Bulunamadı"
+
+);
+
+
+
+
+
+
+
+
+let date =
+
+"Veri yok";
+
+
+
+
+
+
+if(user.timestamp){
+
+
+
+date =
+
+new Date(
+
+user.timestamp * 1000
+
+)
+
+.toLocaleString();
+
+
+
+}
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"dDate"
+
+)
+
+.innerHTML =
+
+
+"<b>Tarih:</b> " +
+
+date;
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"dInstagram"
+
+)
+
+.href =
+
+user.url;
+
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"userModal"
+
+)
+
+.style.display =
+
+"flex";
+
+
+
+}
+
+
+
+
+
+
+
+
+function closeUser(){
+
+
+
+document
+
+.getElementById(
+
+"userModal"
+
+)
+
+.style.display =
+
+"none";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// ESC CLOSE
+// -----------------------------------------------------
+
+
+
+document
+
+.addEventListener(
+
+"keydown",
+
+function(e){
+
+
+if(e.key==="Escape"){
+
+
+closeUser();
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+</script>
+
+
+
+</body>
+
+</html>

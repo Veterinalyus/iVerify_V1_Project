@@ -1,0 +1,2574 @@
+import os
+import json
+import time
+import uuid
+import sqlite3
+import zipfile
+import logging
+import shutil
+
+from pathlib import Path
+from datetime import datetime
+from collections import defaultdict
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+
+
+
+# ============================================================
+# iVerify Final Engine v2
+# PART 1 / 4
+# Core System
+# ============================================================
+
+
+
+# ------------------------------------------------------------
+# LOG SYSTEM
+# ------------------------------------------------------------
+
+logging.basicConfig(
+
+    level=logging.INFO,
+
+    format="%(asctime)s | %(levelname)s | %(message)s"
+
+)
+
+
+logger = logging.getLogger(
+    "iVerify"
+)
+
+
+
+
+# ------------------------------------------------------------
+# FLASK
+# ------------------------------------------------------------
+
+
+app = Flask(__name__)
+
+CORS(app)
+
+
+
+
+
+# ------------------------------------------------------------
+# DIRECTORIES
+# ------------------------------------------------------------
+
+
+BASE_DIR = Path(
+    "iverify_v2_data"
+)
+
+
+BASE_DIR.mkdir(
+    exist_ok=True
+)
+
+
+
+UPLOAD_DIR = BASE_DIR / "uploads"
+
+
+UPLOAD_DIR.mkdir(
+    exist_ok=True
+)
+
+
+
+TEMP_DIR = BASE_DIR / "temp"
+
+
+TEMP_DIR.mkdir(
+    exist_ok=True
+)
+
+
+
+
+DATABASE = BASE_DIR / "iverify_v2.db"
+
+
+
+
+
+# ------------------------------------------------------------
+# SETTINGS
+# ------------------------------------------------------------
+
+
+MAX_UPLOAD_SIZE = (
+    5 * 1024 * 1024 * 1024
+)
+
+
+
+MAX_ZIP_FILES = 100000
+
+
+
+MAX_FILE_SIZE = (
+    200 * 1024 * 1024
+)
+
+
+
+app.config[
+    "MAX_CONTENT_LENGTH"
+] = MAX_UPLOAD_SIZE
+
+
+
+
+
+# ------------------------------------------------------------
+# DATABASE
+# ------------------------------------------------------------
+
+
+def db_connection():
+
+
+    conn = sqlite3.connect(
+
+        DATABASE
+
+    )
+
+
+    conn.row_factory = sqlite3.Row
+
+
+    return conn
+
+
+
+
+
+def init_database():
+
+
+    with db_connection() as db:
+
+
+
+        db.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS archives
+
+            (
+
+                id TEXT PRIMARY KEY,
+
+                filename TEXT,
+
+                created_at INTEGER,
+
+
+                followers INTEGER,
+
+                following INTEGER,
+
+
+                mutual INTEGER,
+
+
+                not_following_back INTEGER,
+
+
+                pending INTEGER
+
+
+            )
+
+            """
+
+        )
+
+
+
+
+
+        db.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS users
+
+            (
+
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+
+                archive_id TEXT,
+
+
+                username TEXT,
+
+
+                category TEXT,
+
+
+                timestamp INTEGER,
+
+
+                url TEXT,
+
+
+                source TEXT
+
+            )
+
+            """
+
+        )
+
+
+
+
+
+        db.execute(
+
+            """
+
+            CREATE TABLE IF NOT EXISTS comparisons
+
+            (
+
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+
+                old_archive TEXT,
+
+
+                new_archive TEXT,
+
+
+                created_at INTEGER
+
+
+            )
+
+            """
+
+        )
+
+
+
+
+        db.commit()
+
+
+
+
+
+
+
+init_database()
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# RESPONSE HELPERS
+# ------------------------------------------------------------
+
+
+def success(data):
+
+
+    return jsonify(
+
+        {
+
+            "success": True,
+
+            "data": data,
+
+            "error": None
+
+        }
+
+    )
+
+
+
+
+
+
+def fail(message):
+
+
+    return jsonify(
+
+        {
+
+            "success": False,
+
+            "data": None,
+
+            "error": message
+
+        }
+
+    )
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# BASIC CLEAN FUNCTIONS
+# ------------------------------------------------------------
+
+
+
+def clean_username(value):
+
+
+    if not value:
+
+        return None
+
+
+
+    if not isinstance(
+        value,
+        str
+    ):
+
+        return None
+
+
+
+    value = value.strip()
+
+
+
+    value = value.replace(
+        "@",
+        ""
+    )
+
+
+
+    if len(value) > 100:
+
+        return None
+
+
+
+    return value.lower()
+
+
+
+
+
+
+
+def clean_text(value):
+
+
+    if not value:
+
+        return ""
+
+
+
+    if not isinstance(
+        value,
+        str
+    ):
+
+        return ""
+
+
+
+    return value.strip()
+
+
+
+
+
+
+
+def convert_timestamp(value):
+
+
+    try:
+
+        return int(value)
+
+
+    except:
+
+
+        return 0
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# ZIP SECURITY
+# ------------------------------------------------------------
+
+
+
+def validate_zip(zip_path):
+
+
+    with zipfile.ZipFile(
+
+        zip_path,
+
+        "r"
+
+    ) as archive:
+
+
+
+        files = archive.infolist()
+
+
+
+        if len(files) > MAX_ZIP_FILES:
+
+
+            raise Exception(
+
+                "ZIP içinde fazla dosya var"
+
+            )
+
+
+
+
+        for file in files:
+
+
+
+            if ".." in file.filename:
+
+
+                raise Exception(
+
+                    "Güvenli olmayan ZIP"
+
+                )
+
+
+
+            if file.file_size > MAX_FILE_SIZE:
+
+
+                raise Exception(
+
+                    "Dosya boyutu fazla"
+
+                )
+
+
+
+
+    return True
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# JSON SAFE READ
+# ------------------------------------------------------------
+
+
+
+def read_json_from_zip(
+        archive,
+        filename
+):
+
+
+    try:
+
+
+        with archive.open(
+            filename
+        ) as file:
+
+
+            return json.load(
+                file
+            )
+
+
+
+    except Exception as error:
+
+
+        logger.error(
+
+            f"JSON okunamadı: {filename} {error}"
+
+        )
+
+
+        return None
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# TIME FORMAT
+# ------------------------------------------------------------
+
+
+def format_date(timestamp):
+
+
+    if not timestamp:
+
+        return None
+
+
+
+    try:
+
+
+        return datetime.fromtimestamp(
+
+            timestamp
+
+        ).strftime(
+
+            "%d.%m.%Y"
+
+        )
+
+
+    except:
+
+
+        return None
+# ============================================================
+# iVerify Final Engine v2
+# PART 2 / 4
+# Meta JSON Parser Engine
+# ============================================================
+
+
+
+# ------------------------------------------------------------
+# META USER EXTRACTOR
+# ------------------------------------------------------------
+
+
+def extract_user_from_item(item):
+
+
+    user = {
+
+
+        "username": None,
+
+        "url": None,
+
+        "timestamp": 0,
+
+        "name": None
+
+
+    }
+
+
+
+    if not isinstance(
+        item,
+        dict
+    ):
+
+        return None
+
+
+
+
+
+    # --------------------------------------------------------
+    # FORMAT 1
+    # title
+    # --------------------------------------------------------
+
+
+    if "title" in item:
+
+
+        username = clean_username(
+
+            item.get(
+                "title"
+            )
+
+        )
+
+
+        if username:
+
+            user["username"] = username
+
+
+
+
+
+    # --------------------------------------------------------
+    # FORMAT 2
+    # string_list_data
+    # --------------------------------------------------------
+
+
+    string_data = item.get(
+
+        "string_list_data",
+
+        []
+
+    )
+
+
+
+    if isinstance(
+        string_data,
+        list
+    ):
+
+
+
+        for data in string_data:
+
+
+
+            if not isinstance(
+                data,
+                dict
+            ):
+
+                continue
+
+
+
+
+            value = clean_username(
+
+                data.get(
+                    "value"
+                )
+
+            )
+
+
+
+            if value and not user["username"]:
+
+                user["username"] = value
+
+
+
+
+
+            if data.get(
+                "href"
+            ):
+
+
+                user["url"] = data.get(
+                    "href"
+                )
+
+
+
+
+
+            if data.get(
+                "timestamp"
+            ):
+
+
+                user["timestamp"] = convert_timestamp(
+
+                    data.get(
+                        "timestamp"
+                    )
+
+                )
+
+
+
+
+
+
+
+    # --------------------------------------------------------
+    # FORMAT 3
+    # label_values
+    # --------------------------------------------------------
+
+
+    labels = item.get(
+
+        "label_values",
+
+        []
+
+    )
+
+
+
+    if isinstance(
+        labels,
+        list
+    ):
+
+
+
+        for label in labels:
+
+
+
+            if not isinstance(
+                label,
+                dict
+            ):
+
+                continue
+
+
+
+
+
+            key = clean_text(
+
+                label.get(
+                    "label"
+                )
+
+            ).lower()
+
+
+
+
+
+            value = label.get(
+                "value"
+            )
+
+
+
+
+
+            if not value:
+
+                continue
+
+
+
+
+
+
+            # Kullanıcı adı
+
+
+            if (
+
+                "kullanıcı"
+
+                in
+
+                key
+
+                or
+
+                "username"
+
+                in
+
+                key
+
+            ):
+
+
+                user["username"] = clean_username(
+
+                    value
+
+                )
+
+
+
+
+
+            # Ad
+
+
+            if (
+
+                key == "ad"
+
+                or
+
+                "name"
+
+                in
+
+                key
+
+            ):
+
+
+                user["name"] = clean_text(
+
+                    value
+
+                )
+
+
+
+
+
+            # URL
+
+
+            if (
+
+                "url"
+
+                in
+
+                key
+
+                or
+
+                "internet"
+
+                in
+
+                key
+
+            ):
+
+
+                user["url"] = value
+
+
+
+
+
+
+
+    if not user["username"]:
+
+        return None
+
+
+
+
+
+    # Profil URL oluşturma
+
+
+    if not user["url"]:
+
+
+        user["url"] = (
+
+            "https://www.instagram.com/"
+
+            +
+
+            user["username"]
+
+            +
+
+            "/"
+
+        )
+
+
+
+
+    return user
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# FIND USER LISTS INSIDE JSON
+# ------------------------------------------------------------
+
+
+
+def find_users_in_json(data):
+
+
+    results = []
+
+
+
+    if isinstance(
+        data,
+        list
+    ):
+
+
+        for item in data:
+
+
+            user = extract_user_from_item(
+                item
+            )
+
+
+            if user:
+
+                results.append(
+                    user
+                )
+
+
+
+        return results
+
+
+
+
+
+
+
+    if isinstance(
+        data,
+        dict
+    ):
+
+
+
+        # direkt liste alanları
+
+
+        for key,value in data.items():
+
+
+
+            if isinstance(
+                value,
+                list
+            ):
+
+
+
+                for item in value:
+
+
+
+                    user = extract_user_from_item(
+
+                        item
+
+                    )
+
+
+
+                    if user:
+
+
+                        results.append(
+                            user
+                        )
+
+
+
+
+    return results
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# FILE TYPE DETECTOR
+# ------------------------------------------------------------
+
+
+
+def detect_meta_file(filename):
+
+
+    name = filename.lower()
+
+
+
+
+
+    if "pending" in name:
+
+
+        return "pending_requests"
+
+
+
+
+
+    if "follow_requests_you" in name:
+
+
+        return "received_requests"
+
+
+
+
+
+    if "recent_follow_requests" in name:
+
+
+        return "recent_requests"
+
+
+
+
+
+    if "recently_unfollowed" in name:
+
+
+        return "recently_unfollowed"
+
+
+
+
+
+    if "followers" in name:
+
+
+        return "followers"
+
+
+
+
+
+    if "following" in name:
+
+
+        return "following"
+
+
+
+
+
+    if "restricted" in name:
+
+
+        return "restricted"
+
+
+
+
+
+    if "blocked" in name:
+
+
+        return "blocked"
+
+
+
+
+
+    if "close_friends" in name:
+
+
+        return "close_friends"
+
+
+
+
+
+    return None
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# READ ALL META JSON FILES
+# ------------------------------------------------------------
+
+
+
+def parse_meta_archive(zip_path):
+
+
+    data_store = {
+
+
+        "followers": [],
+
+        "following": [],
+
+        "pending_requests": [],
+
+        "received_requests": [],
+
+        "recent_requests": [],
+
+        "recently_unfollowed": [],
+
+        "restricted": [],
+
+        "blocked": [],
+
+        "close_friends": []
+
+    }
+
+
+
+
+    with zipfile.ZipFile(
+
+        zip_path,
+
+        "r"
+
+    ) as archive:
+
+
+
+        for file in archive.namelist():
+
+
+
+            if not file.lower().endswith(
+                ".json"
+            ):
+
+                continue
+
+
+
+
+
+            file_type = detect_meta_file(
+
+                file
+
+            )
+
+
+
+
+
+            if not file_type:
+
+                continue
+
+
+
+
+
+            content = read_json_from_zip(
+
+                archive,
+
+                file
+
+            )
+
+
+
+
+
+            if content is None:
+
+                continue
+
+
+
+
+
+            users = find_users_in_json(
+
+                content
+
+            )
+
+
+
+
+
+            data_store[file_type].extend(
+
+                users
+
+            )
+
+
+
+
+    return data_store
+# ============================================================
+# iVerify Final Engine v2
+# PART 3 / 4
+# Analysis Engine
+# ============================================================
+
+
+
+# ------------------------------------------------------------
+# REMOVE DUPLICATES
+# ------------------------------------------------------------
+
+
+def unique_users(users):
+
+
+    result = {}
+
+
+
+    for user in users:
+
+
+
+        username = user.get(
+            "username"
+        )
+
+
+
+        if not username:
+
+            continue
+
+
+
+        result[username] = user
+
+
+
+
+    return list(
+        result.values()
+    )
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# ADD USER STATUS
+# ------------------------------------------------------------
+
+
+def add_status(
+        users,
+        status
+):
+
+
+    output = []
+
+
+
+    for user in users:
+
+
+        item = user.copy()
+
+
+
+        item["status"] = status
+
+
+
+        output.append(
+            item
+        )
+
+
+
+    return output
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# MAIN ANALYSIS
+# ------------------------------------------------------------
+
+
+def analyze_relationships(data):
+
+
+    followers = unique_users(
+
+        data.get(
+            "followers",
+            []
+        )
+
+    )
+
+
+
+    following = unique_users(
+
+        data.get(
+            "following",
+            []
+        )
+
+    )
+
+
+
+    pending = unique_users(
+
+        data.get(
+            "pending_requests",
+            []
+        )
+
+    )
+
+
+
+    received = unique_users(
+
+        data.get(
+            "received_requests",
+            []
+        )
+
+    )
+
+
+
+    recent_requests = unique_users(
+
+        data.get(
+            "recent_requests",
+            []
+        )
+
+    )
+
+
+
+    unfollowed = unique_users(
+
+        data.get(
+            "recently_unfollowed",
+            []
+        )
+
+    )
+
+
+
+    restricted = unique_users(
+
+        data.get(
+            "restricted",
+            []
+        )
+
+    )
+
+
+
+    blocked = unique_users(
+
+        data.get(
+            "blocked",
+            []
+        )
+
+    )
+
+
+
+    close_friends = unique_users(
+
+        data.get(
+            "close_friends",
+            []
+        )
+
+    )
+
+
+
+
+
+    followers_map = {
+
+
+        x["username"]:x
+
+        for x in followers
+
+    }
+
+
+
+    following_map = {
+
+
+        x["username"]:x
+
+        for x in following
+
+    }
+
+
+
+
+
+
+    followers_set = set(
+
+        followers_map.keys()
+
+    )
+
+
+
+    following_set = set(
+
+        following_map.keys()
+
+    )
+
+
+
+
+
+
+    # --------------------------------------------------------
+    # RELATION CALCULATIONS
+    # --------------------------------------------------------
+
+
+
+    mutual_names = (
+
+        followers_set
+
+        &
+
+        following_set
+
+    )
+
+
+
+
+    following_not_following_back_names = (
+
+        following_set
+
+        -
+
+        followers_set
+
+    )
+
+
+
+
+    followers_not_following_names = (
+
+        followers_set
+
+        -
+
+        following_set
+
+    )
+
+
+
+
+
+
+    result = {
+
+
+
+        "stats": {
+
+
+
+            "followers":
+
+                len(
+                    followers
+                ),
+
+
+
+            "following":
+
+                len(
+                    following
+                ),
+
+
+
+            "mutual":
+
+                len(
+                    mutual_names
+                ),
+
+
+
+            "following_not_following_back":
+
+                len(
+                    following_not_following_back_names
+                ),
+
+
+
+            "followers_not_following":
+
+                len(
+                    followers_not_following_names
+                ),
+
+
+
+            "pending_requests":
+
+                len(
+                    pending
+                ),
+
+
+
+            "received_requests":
+
+                len(
+                    received
+                ),
+
+
+
+            "recent_requests":
+
+                len(
+                    recent_requests
+                ),
+
+
+
+            "recently_unfollowed":
+
+                len(
+                    unfollowed
+                ),
+
+
+
+            "restricted":
+
+                len(
+                    restricted
+                ),
+
+
+
+            "blocked":
+
+                len(
+                    blocked
+                )
+
+        },
+
+
+
+
+
+        "users": {
+
+
+            "mutual":
+
+                add_status(
+
+                    [
+
+                        followers_map[x]
+
+                        for x in sorted(
+                            mutual_names
+                        )
+
+                    ],
+
+                    "mutual"
+
+                ),
+
+
+
+
+
+            "following_not_following_back":
+
+                add_status(
+
+                    [
+
+                        following_map[x]
+
+                        for x in sorted(
+                            following_not_following_back_names
+                        )
+
+                    ],
+
+                    "not_following_back"
+
+                ),
+
+
+
+
+
+            "followers_not_following":
+
+                add_status(
+
+                    [
+
+                        followers_map[x]
+
+                        for x in sorted(
+                            followers_not_following_names
+                        )
+
+                    ],
+
+                    "fan"
+
+                ),
+
+
+
+
+
+            "followers":
+
+                add_status(
+
+                    followers,
+
+                    "follower"
+
+                ),
+
+
+
+
+
+            "following":
+
+                add_status(
+
+                    following,
+
+                    "following"
+
+                ),
+
+
+
+
+
+            "pending_requests":
+
+                add_status(
+
+                    pending,
+
+                    "pending_request"
+
+                ),
+
+
+
+
+
+            "received_requests":
+
+                add_status(
+
+                    received,
+
+                    "received_request"
+
+                ),
+
+
+
+
+
+            "recent_requests":
+
+                add_status(
+
+                    recent_requests,
+
+                    "recent_request"
+
+                ),
+
+
+
+
+
+            "recently_unfollowed":
+
+                add_status(
+
+                    unfollowed,
+
+                    "recently_unfollowed"
+
+                ),
+
+
+
+
+
+            "restricted":
+
+                add_status(
+
+                    restricted,
+
+                    "restricted"
+
+                ),
+
+
+
+
+
+            "blocked":
+
+                add_status(
+
+                    blocked,
+
+                    "blocked"
+
+                ),
+
+
+
+
+
+            "close_friends":
+
+                add_status(
+
+                    close_friends,
+
+                    "close_friend"
+
+                )
+
+        }
+
+    }
+
+
+
+
+    return result
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# CREATE FINAL ANALYSIS
+# ------------------------------------------------------------
+
+
+def run_analysis(zip_path):
+
+
+    raw_data = parse_meta_archive(
+
+        zip_path
+
+    )
+
+
+
+    result = analyze_relationships(
+
+        raw_data
+
+    )
+
+
+
+    result["created_at"] = int(
+
+        time.time()
+
+    )
+
+
+
+    result["status"] = "completed"
+
+
+
+    return result
+# ============================================================
+# iVerify Final Engine v2
+# PART 4 / 4
+# API + Archive + Server
+# ============================================================
+
+
+
+
+# ------------------------------------------------------------
+# SAVE ANALYSIS ARCHIVE
+# ------------------------------------------------------------
+
+
+def save_analysis(
+        filename,
+        result
+):
+
+
+    archive_id = uuid.uuid4().hex
+
+
+
+    now = int(
+        time.time()
+    )
+
+
+
+    stats = result.get(
+        "stats",
+        {}
+    )
+
+
+
+    with db_connection() as db:
+
+
+
+        db.execute(
+
+            """
+
+            INSERT INTO archives
+
+            (
+
+                id,
+
+                filename,
+
+                created_at,
+
+                followers,
+
+                following,
+
+                mutual,
+
+                not_following_back,
+
+                pending
+
+            )
+
+
+            VALUES
+
+            (?,?,?,?,?,?,?,?)
+
+            """,
+
+            (
+
+                archive_id,
+
+                filename,
+
+                now,
+
+                stats.get(
+                    "followers",
+                    0
+                ),
+
+                stats.get(
+                    "following",
+                    0
+                ),
+
+                stats.get(
+                    "mutual",
+                    0
+                ),
+
+                stats.get(
+                    "following_not_following_back",
+                    0
+                ),
+
+                stats.get(
+                    "pending_requests",
+                    0
+                )
+
+            )
+
+        )
+
+
+
+        for category, users in result.get(
+            "users",
+            {}
+        ).items():
+
+
+
+            for user in users:
+
+
+
+                db.execute(
+
+                    """
+
+                    INSERT INTO users
+
+                    (
+
+                        archive_id,
+
+                        username,
+
+                        category,
+
+                        timestamp,
+
+                        url,
+
+                        source
+
+                    )
+
+                    VALUES
+
+                    (?,?,?,?,?,?)
+
+                    """,
+
+                    (
+
+                        archive_id,
+
+                        user.get(
+                            "username"
+                        ),
+
+                        category,
+
+                        user.get(
+                            "timestamp",
+                            0
+                        ),
+
+                        user.get(
+                            "url"
+                        ),
+
+                        user.get(
+                            "source",
+                            ""
+                        )
+
+                    )
+
+                )
+
+
+
+
+        db.commit()
+
+
+
+    return archive_id
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# UPLOAD API
+# ------------------------------------------------------------
+
+
+
+@app.route(
+
+    "/api/analyze",
+
+    methods=["POST"]
+
+)
+
+def api_analyze():
+
+
+
+    if "file" not in request.files:
+
+
+        return fail(
+
+            "ZIP dosyası bulunamadı"
+
+        )
+
+
+
+
+
+    uploaded = request.files["file"]
+
+
+
+
+
+    filename = secure_filename(
+
+        uploaded.filename
+
+    )
+
+
+
+
+
+    if not filename.lower().endswith(
+
+        ".zip"
+
+    ):
+
+
+        return fail(
+
+            "Sadece ZIP dosyası yüklenebilir"
+
+        )
+
+
+
+
+
+
+    temp_file = (
+
+        UPLOAD_DIR
+
+        /
+
+        (
+
+            uuid.uuid4().hex
+
+            +
+
+            "_"
+
+            +
+
+            filename
+
+        )
+
+    )
+
+
+
+
+
+    try:
+
+
+
+        uploaded.save(
+
+            temp_file
+
+        )
+
+
+
+
+
+        validate_zip(
+
+            temp_file
+
+        )
+
+
+
+
+
+        result = run_analysis(
+
+            temp_file
+
+        )
+
+
+
+
+
+        archive_id = save_analysis(
+
+            filename,
+
+            result
+
+        )
+
+
+
+
+        result["archive_id"] = archive_id
+
+
+
+
+
+        return success(
+
+            result
+
+        )
+
+
+
+
+    except Exception as error:
+
+
+
+        logger.exception(
+
+            error
+
+        )
+
+
+
+        return fail(
+
+            str(error)
+
+        )
+
+
+
+
+    finally:
+
+
+
+        if temp_file.exists():
+
+            temp_file.unlink()
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# ARCHIVE LIST
+# ------------------------------------------------------------
+
+
+
+@app.route(
+
+    "/api/archives",
+
+    methods=["GET"]
+
+)
+
+def get_archives():
+
+
+
+    with db_connection() as db:
+
+
+
+        rows = db.execute(
+
+            """
+
+            SELECT *
+
+            FROM archives
+
+            ORDER BY created_at DESC
+
+            """
+
+        ).fetchall()
+
+
+
+    return success(
+
+        [
+
+            dict(row)
+
+            for row in rows
+
+        ]
+
+    )
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# USER SEARCH
+# ------------------------------------------------------------
+
+
+
+@app.route(
+
+    "/api/search",
+
+    methods=["GET"]
+
+)
+
+def search_users():
+
+
+
+    query = request.args.get(
+
+        "q",
+
+        ""
+
+    ).lower()
+
+
+
+    with db_connection() as db:
+
+
+
+        rows = db.execute(
+
+            """
+
+            SELECT *
+
+            FROM users
+
+            WHERE username LIKE ?
+
+            LIMIT 100
+
+            """,
+
+            (
+
+                "%" + query + "%",
+
+            )
+
+        ).fetchall()
+
+
+
+    return success(
+
+        [
+
+            dict(row)
+
+            for row in rows
+
+        ]
+
+    )
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# COMPARE ARCHIVES
+# ------------------------------------------------------------
+
+
+
+@app.route(
+
+    "/api/compare/<old_id>/<new_id>",
+
+    methods=["GET"]
+
+)
+
+def compare(old_id,new_id):
+
+
+
+    with db_connection() as db:
+
+
+
+        old_users = db.execute(
+
+            """
+
+            SELECT username, category
+
+            FROM users
+
+            WHERE archive_id=?
+
+            """,
+
+            (
+
+                old_id,
+
+            )
+
+        ).fetchall()
+
+
+
+
+
+        new_users = db.execute(
+
+            """
+
+            SELECT username, category
+
+            FROM users
+
+            WHERE archive_id=?
+
+            """,
+
+            (
+
+                new_id,
+
+            )
+
+        ).fetchall()
+
+
+
+
+
+    old_set = set(
+
+        (
+
+            x["username"],
+
+            x["category"]
+
+        )
+
+        for x in old_users
+
+    )
+
+
+
+
+
+    new_set = set(
+
+        (
+
+            x["username"],
+
+            x["category"]
+
+        )
+
+        for x in new_users
+
+    )
+
+
+
+
+
+    return success(
+
+        {
+
+            "added":
+
+            [
+
+                {
+
+                    "username":x[0],
+
+                    "category":x[1]
+
+                }
+
+                for x in sorted(
+                    new_set-old_set
+                )
+
+            ],
+
+
+
+            "removed":
+
+            [
+
+                {
+
+                    "username":x[0],
+
+                    "category":x[1]
+
+                }
+
+                for x in sorted(
+                    old_set-new_set
+                )
+
+            ]
+
+        }
+
+    )
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------
+# START SERVER
+# ------------------------------------------------------------
+
+
+if __name__ == "__main__":
+
+
+
+    logger.info(
+
+        "iVerify Final Engine v2 başladı"
+
+    )
+
+
+
+    app.run(
+
+        host="127.0.0.1",
+
+        port=5000,
+
+        debug=False
+
+    )

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iVerify — Instagram Arşiv & Analiz Sistemi</title>
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --border: #334155;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(150px, 1fr)
+            );
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-box p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
+
+        .user-item {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .archive-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .archive-table th,
+        .archive-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .archive-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>iVerify</h1>
+        <p>Meta Instagram Arşiv Analiz ve Karşılaştırma Sistemi</p>
+    </header>
+
+    <div class="card" id="upload-card">
+
+        <div
+            class="upload-area"
+            id="drop-zone"
+            onclick="document.getElementById('file-input').click()"
+        >
+
+            <p>
+                Instagram Meta ZIP dosyanızı buraya sürükleyin
+                ya da seçmek için tıklayın
+            </p>
+
+            <input
+                type="file"
+                id="file-input"
+                accept=".zip"
+                onchange="handleFileSelect(event)"
+            >
+
+            <button class="btn">
+                Dosya Seç
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card hidden" id="loading-card">
+
+        <div class="loading">
+
+            <p>
+                Arşiv taranıyor, güvenlik kontrolleri yapılıyor
+                ve analiz gerçekleştiriliyor...
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="card hidden" id="result-card">
+
+        <h2 style="margin-bottom: 1rem; font-size: 1.25rem;">
+            Analiz Sonuçları
+        </h2>
+
+        <div class="stats-grid">
+
+            <div class="stat-box">
+                <h3 id="stat-followers">0</h3>
+                <p>Takipçi</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="stat-following">0</h3>
+                <p>Takip Edilen</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="stat-mutual">0</h3>
+                <p>Karşılıklı</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="stat-not-back">0</h3>
+                <p>Geri Takip Etmeyen</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="stat-fans">0</h3>
+                <p>Sadece Beni Takip Eden</p>
+            </div>
+
+        </div>
+
+        <div class="tabs">
+
+            <button
+                class="tab-btn active"
+                onclick="switchTab('not_following_back', this)"
+            >
+                Geri Takip Etmeyenler
+            </button>
+
+            <button
+                class="tab-btn"
+                onclick="switchTab('fans', this)"
+            >
+                Sadece Beni Takip Edenler
+            </button>
+
+            <button
+                class="tab-btn"
+                onclick="switchTab('mutual', this)"
+            >
+                Karşılıklı Takipler
+            </button>
+
+            <button
+                class="tab-btn"
+                onclick="switchTab('followers', this)"
+            >
+                Tüm Takipçiler
+            </button>
+
+            <button
+                class="tab-btn"
+                onclick="switchTab('following', this)"
+            >
+                Tüm Takip Edilenler
+            </button>
+
+        </div>
+
+        <div
+            class="user-list"
+            id="user-list-container"
+        ></div>
+
+        <button
+            class="btn"
+            style="margin-top: 1rem;"
+            onclick="resetUI()"
+        >
+            Yeni Arşiv Yükle
+        </button>
+
+    </div>
+
+    <div class="card" id="archive-history-card">
+
+        <h2 style="margin-bottom: 1rem; font-size: 1.25rem;">
+            Arşiv Geçmişi ve Karşılaştırma
+        </h2>
+
+        <div id="archive-list-container">
+
+            <p
+                style="
+                    color: var(--text-muted);
+                    font-size: 0.9rem;
+                "
+            >
+                Kayıtlı arşiv bulunamadı.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentData = null;
+let archiveListCache = [];
+
+
+function escapeHtml(str) {
+
+    if (!str) return '';
+
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+}
+
+
+async function loadArchives() {
+
+    try {
+
+        const res = await fetch(
+            'http://127.0.0.1:5000/api/arsivler'
+        );
+
+        const json = await res.json();
+
+        if (
+            json.success &&
+            json.data &&
+            json.data.length > 0
+        ) {
+
+            archiveListCache = json.data;
+
+            let html = `
+                <table class="archive-table">
+                    <thead>
+                        <tr>
+                            <th>Dosya Adı</th>
+                            <th>Tarih</th>
+                            <th>Takipçi</th>
+                            <th>Takip Edilen</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            archiveListCache.forEach(arch => {
+
+                const date =
+                    new Date(
+                        arch.created_at * 1000
+                    ).toLocaleString();
+
+                html += `
+                    <tr>
+                        <td>
+                            ${escapeHtml(
+                                arch.original_filename
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(date)}
+                        </td>
+
+                        <td>
+                            ${arch.followers_count}
+                        </td>
+
+                        <td>
+                            ${arch.following_count}
+                        </td>
+
+                        <td>
+                            <button
+                                class="tab-btn"
+                                onclick="compareWithPrevious('${arch.id}')"
+                            >
+                                Geçmişle Karşılaştır
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById(
+                'archive-list-container'
+            ).innerHTML = html;
+
+        } else {
+
+            document.getElementById(
+                'archive-list-container'
+            ).innerHTML = `
+                <p
+                    style="
+                        color: var(--text-muted);
+                        font-size: 0.9rem;
+                    "
+                >
+                    Kayıtlı arşiv bulunamadı.
+                </p>
+            `;
+
+        }
+
+    } catch (e) {
+
+        console.error(
+            "Arşivler yüklenemedi",
+            e
+        );
+
+        document.getElementById(
+            'archive-list-container'
+        ).innerHTML = `
+            <p
+                style="
+                    color: var(--danger);
+                    font-size: 0.9rem;
+                "
+            >
+                Sunucu bağlantısı kurulamadı.
+            </p>
+        `;
+
+    }
+
+}
+
+
+function handleFileSelect(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (file) {
+        uploadArchive(file);
+    }
+
+}
+
+
+async function uploadArchive(file) {
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "instagram_archive",
+        file
+    );
+
+    document.getElementById(
+        'upload-card'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'loading-card'
+    ).classList.remove('hidden');
+
+    try {
+
+        const response =
+            await fetch(
+                'http://127.0.0.1:5000/api/arsivle',
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if (result.success) {
+
+            currentData =
+                result.data;
+
+            showResults(
+                currentData
+            );
+
+            loadArchives();
+
+        } else {
+
+            alert(
+                "Hata: " +
+                (
+                    result.error ||
+                    "Bilinmeyen hata"
+                )
+            );
+
+            resetUI();
+
+        }
+
+    } catch (err) {
+
+        alert(
+            "Sunucu bağlantısı kurulamadı."
+        );
+
+        resetUI();
+
+    } finally {
+
+        document.getElementById(
+            'loading-card'
+        ).classList.add('hidden');
+
+    }
+
+}
+
+
+function showResults(data) {
+
+    document.getElementById(
+        'stat-followers'
+    ).innerText =
+        data.stats.followers_count;
+
+    document.getElementById(
+        'stat-following'
+    ).innerText =
+        data.stats.following_count;
+
+    document.getElementById(
+        'stat-mutual'
+    ).innerText =
+        data.stats.mutual_count;
+
+    document.getElementById(
+        'stat-not-back'
+    ).innerText =
+        data.stats.not_following_back_count;
+
+    document.getElementById(
+        'stat-fans'
+    ).innerText =
+        data.stats.fans_count;
+
+    switchTab(
+        'not_following_back'
+    );
+
+    document.getElementById(
+        'result-card'
+    ).classList.remove('hidden');
+
+}
+
+
+function switchTab(
+    tabName,
+    btnElement
+) {
+
+    document
+        .querySelectorAll('.tab-btn')
+        .forEach(
+            btn =>
+                btn.classList.remove(
+                    'active'
+                )
+        );
+
+    if (btnElement) {
+
+        btnElement.classList.add(
+            'active'
+        );
+
+    } else {
+
+        const buttons =
+            document.querySelectorAll(
+                '.tabs .tab-btn'
+            );
+
+        const indexMap = {
+            'not_following_back': 0,
+            'fans': 1,
+            'mutual': 2,
+            'followers': 3,
+            'following': 4
+        };
+
+        if (
+            buttons[
+                indexMap[tabName]
+            ]
+        ) {
+
+            buttons[
+                indexMap[tabName]
+            ].classList.add(
+                'active'
+            );
+
+        }
+
+    }
+
+    const container =
+        document.getElementById(
+            'user-list-container'
+        );
+
+    container.innerHTML = '';
+
+    if (
+        !currentData ||
+        !currentData.results
+    ) {
+        return;
+    }
+
+    const list =
+        currentData.results[
+            tabName
+        ] || [];
+
+    if (list.length === 0) {
+
+        container.innerHTML =
+            '<div class="user-item">Kayıt bulunamadı.</div>';
+
+        return;
+    }
+
+    list.forEach(user => {
+
+        const div =
+            document.createElement(
+                'div'
+            );
+
+        div.className =
+            'user-item';
+
+        div.innerHTML = `
+            <span>
+                @${escapeHtml(
+                    user.username
+                )}
+            </span>
+
+            <span
+                style="
+                    color:var(--text-muted);
+                    font-size:0.8rem;
+                "
+            >
+                ${escapeHtml(
+                    user.source_file || ''
+                )}
+            </span>
+        `;
+
+        container.appendChild(
+            div
+        );
+
+    });
+
+}
+
+
+function resetUI() {
+
+    document.getElementById(
+        'result-card'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'upload-card'
+    ).classList.remove('hidden');
+
+    document.getElementById(
+        'file-input'
+    ).value = '';
+
+    currentData = null;
+
+}
+
+
+async function compareWithPrevious(
+    currentId
+) {
+
+    try {
+
+        const currentIndex =
+            archiveListCache.findIndex(
+                a => a.id === currentId
+            );
+
+        if (currentIndex <= 0) {
+
+            alert(
+                "Bu arşivden daha eski bir kayıt bulunamadı."
+            );
+
+            return;
+        }
+
+        const prevArch =
+            archiveListCache[
+                currentIndex - 1
+            ];
+
+        const compRes =
+            await fetch(
+                `http://127.0.0.1:5000/api/arsiv/${prevArch.id}/karsilastir/${currentId}`
+            );
+
+        const compJson =
+            await compRes.json();
+
+        if (compJson.success) {
+
+            const data =
+                compJson.data;
+
+            alert(
+                `Arşiv Karşılaştırma Sonucu (${escapeHtml(prevArch.original_filename)} → ${escapeHtml(archiveListCache[currentIndex].original_filename)}):\n\n` +
+
+                `• Yeni Takipçiler: ${data.followers.new.length}\n` +
+
+                `• Kaybedilen Takipçiler: ${data.followers.lost.length}\n` +
+
+                `• Yeni Takip Edilenler: ${data.following.new.length}\n` +
+
+                `• Takipten Çıkarılanlar: ${data.following.removed.length}\n` +
+
+                `• Yeni Karşılıklı: ${data.mutual.new.length}\n` +
+
+                `• Karşılıklılığı Bitenler: ${data.mutual.lost.length}`
+            );
+
+        } else {
+
+            alert(
+                "Karşılaştırma hatası: " +
+                (
+                    compJson.error ||
+                    "Bilinmeyen hata"
+                )
+            );
+
+        }
+
+    } catch (e) {
+
+        alert(
+            "Sunucu bağlantısı kurulamadı."
+        );
+
+    }
+
+}
+
+
+window.onload =
+    loadArchives;
+
+</script>
+
+</body>
+</html>

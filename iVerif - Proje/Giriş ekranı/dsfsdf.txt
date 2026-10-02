@@ -1,0 +1,1686 @@
+import os
+import json
+import uuid
+import time
+import sqlite3
+import logging
+import zipfile
+import threading
+
+from pathlib import Path
+from collections import defaultdict
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+
+
+# ============================================================
+# LOGGING
+# ============================================================
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger("iVerify")
+
+
+# ============================================================
+# FLASK AYARLARI
+# ============================================================
+
+app = Flask(__name__)
+CORS(app)
+
+
+app.config["MAX_CONTENT_LENGTH"] = (
+    5 * 1024 * 1024 * 1024
+)
+
+
+# ============================================================
+# DOSYA / DATABASE
+# ============================================================
+
+BASE_FOLDER = (
+    Path.home()
+    /
+    "Desktop"
+    /
+    "iVerify_Arsiv"
+)
+
+BASE_FOLDER.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+
+DB_PATH = (
+    BASE_FOLDER
+    /
+    "iverif.db"
+)
+
+
+# ============================================================
+# GÜVENLİK LİMİTLERİ
+# ============================================================
+
+MAX_ZIP_FILE_SIZE = (
+    5 *
+    1024 *
+    1024 *
+    1024
+)
+
+MAX_ZIP_ENTRY_COUNT = 100000
+
+MAX_SINGLE_FILE_UNCOMPRESSED = (
+    50 *
+    1024 *
+    1024
+)
+
+MAX_TOTAL_TARGET_UNCOMPRESSED = (
+    250 *
+    1024 *
+    1024
+)
+
+MAX_COMPRESSION_RATIO = 100
+
+
+MAX_USERNAME_LENGTH = 100
+
+MAX_JSON_DEPTH = 50
+
+
+MAX_USERS_PER_FILE = 2_000_000
+
+MAX_TOTAL_USERS = 5_000_000
+
+
+RATE_LIMIT_WINDOW = 60
+
+RATE_LIMIT_MAX_REQUESTS = 30
+
+
+_rate_lock = threading.Lock()
+
+_rate_cache = defaultdict(list)
+
+
+
+# ============================================================
+# RESPONSE YARDIMCILARI
+# ============================================================
+
+
+def success_response(
+        data,
+        status_code=200
+):
+
+    return jsonify(
+        {
+            "success": True,
+            "data": data,
+            "error": None
+        }
+    ), status_code
+
+
+
+def error_response(
+        message,
+        status_code=400,
+        details=None
+):
+
+    return jsonify(
+        {
+            "success": False,
+            "data": None,
+            "error": message,
+            "details": details
+        }
+    ), status_code
+
+
+
+# ============================================================
+# DATABASE
+# ============================================================
+
+
+def get_db():
+
+    conn = sqlite3.connect(
+        DB_PATH
+    )
+
+    conn.row_factory = sqlite3.Row
+
+    return conn
+
+
+
+def init_db():
+
+    with get_db() as db:
+
+        db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS archives
+            (
+                id TEXT PRIMARY KEY,
+                created_at INTEGER NOT NULL,
+                original_filename TEXT NOT NULL,
+
+                followers_count INTEGER NOT NULL,
+                following_count INTEGER NOT NULL,
+
+                not_following_back_count INTEGER NOT NULL,
+                fans_count INTEGER NOT NULL,
+
+                mutual_count INTEGER NOT NULL,
+
+                long_term_count INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
+
+
+        db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS archive_users
+            (
+                archive_id TEXT NOT NULL,
+                username TEXT NOT NULL,
+
+                relation TEXT NOT NULL,
+
+                timestamp INTEGER DEFAULT 0,
+
+                source_file TEXT,
+
+                PRIMARY KEY
+                (
+                    archive_id,
+                    username,
+                    relation
+                )
+            )
+            """
+        )
+
+
+        db.commit()
+
+
+
+init_db()
+
+# ============================================================
+# RATE LIMIT
+# ============================================================
+
+
+def check_rate_limit(ip):
+
+    now = time.time()
+
+    with _rate_lock:
+
+        requests = [
+            t
+            for t in _rate_cache[ip]
+            if now - t < RATE_LIMIT_WINDOW
+        ]
+
+
+        if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
+
+            return False
+
+
+        requests.append(now)
+
+        _rate_cache[ip] = requests
+
+
+    return True
+
+
+
+# ============================================================
+# VERİ TEMİZLEME
+# ============================================================
+
+
+def sanitize_username(value):
+
+    if not isinstance(value, str):
+
+        return None
+
+
+    username = (
+        value
+        .strip()
+        .lstrip("@")
+        .strip()
+        .lower()
+    )
+
+
+    if not username:
+
+        return None
+
+
+    if len(username) > MAX_USERNAME_LENGTH:
+
+        return None
+
+
+    if any(
+        ord(ch) < 32
+        for ch in username
+    ):
+
+        return None
+
+
+    return username
+
+
+
+# ============================================================
+# ZIP GÜVENLİK
+# ============================================================
+
+
+def is_safe_zip_path(filename):
+
+    if not filename:
+
+        return False
+
+
+    normalized = (
+        filename
+        .replace("\\", "/")
+    )
+
+
+    if normalized.startswith("/"):
+
+        return False
+
+
+    parts = normalized.split("/")
+
+
+    if ".." in parts:
+
+        return False
+
+
+    return True
+
+
+
+def validate_zip(zip_path):
+
+
+    if (
+        os.path.getsize(zip_path)
+        >
+        MAX_ZIP_FILE_SIZE
+    ):
+
+        raise ValueError(
+            "ZIP dosyası izin verilen boyutu aşıyor."
+        )
+
+
+
+    with zipfile.ZipFile(zip_path, "r") as z:
+
+
+        files = z.infolist()
+
+
+
+        if len(files) > MAX_ZIP_ENTRY_COUNT:
+
+            raise ValueError(
+                "ZIP içinde fazla sayıda dosya bulundu."
+            )
+
+
+
+        for info in files:
+
+
+            if not is_safe_zip_path(
+                info.filename
+            ):
+
+                raise ValueError(
+                    "Güvenli olmayan ZIP yolu bulundu."
+                )
+
+
+
+            if info.is_dir():
+
+                continue
+
+
+
+            if info.compress_size > 0:
+
+
+                ratio = (
+                    info.file_size
+                    /
+                    info.compress_size
+                )
+
+
+                if (
+                    ratio >
+                    MAX_COMPRESSION_RATIO
+                    and
+                    info.file_size >
+                    10 * 1024 * 1024
+                ):
+
+                    raise ValueError(
+                        "Şüpheli ZIP sıkıştırması tespit edildi."
+                    )
+
+
+
+    return True
+
+
+
+
+# ============================================================
+# JSON KONTROL
+# ============================================================
+
+
+def json_depth(
+        value,
+        depth=0
+):
+
+
+    if depth > MAX_JSON_DEPTH:
+
+        raise ValueError(
+            "JSON veri yapısı çok derin."
+        )
+
+
+
+    if isinstance(value, dict):
+
+        for item in value.values():
+
+            json_depth(
+                item,
+                depth + 1
+            )
+
+
+
+    elif isinstance(value, list):
+
+        for item in value:
+
+            json_depth(
+                item,
+                depth + 1
+            )
+
+
+
+
+# ============================================================
+# ZAMAN KONTROL
+# ============================================================
+
+
+def safe_timestamp(value):
+
+    try:
+
+        ts = int(value)
+
+        if ts < 0:
+
+            return 0
+
+
+        return ts
+
+
+    except:
+
+        return 0
+
+
+
+
+# ============================================================
+# ANALİZ RAPORU
+# ============================================================
+
+
+def create_analysis_report(
+        files_checked,
+        skipped_files,
+        followers_count,
+        following_count
+):
+
+
+    return {
+
+        "files_checked": files_checked,
+
+        "skipped_files": skipped_files,
+
+
+        "validation": {
+
+            "followers_found":
+                followers_count > 0,
+
+
+            "following_found":
+                following_count > 0,
+
+
+            "status":
+                "success"
+
+                if followers_count > 0
+                and following_count > 0
+
+                else
+                "warning"
+
+        }
+
+    }
+
+# ============================================================
+# INSTAGRAM META ANALİZ MOTORU
+# ============================================================
+
+
+def extract_username(item):
+
+    """
+    Meta Instagram farklı veri formatlarından
+    kullanıcı adını bulmaya çalışır.
+    """
+
+
+    if not isinstance(item, dict):
+
+        return None
+
+
+
+    # Yeni Meta formatı
+
+    if "title" in item:
+
+        username = sanitize_username(
+            item.get("title")
+        )
+
+        if username:
+
+            return username
+
+
+
+    # Eski format
+
+    string_list = item.get(
+        "string_list_data",
+        []
+    )
+
+
+    if isinstance(string_list, list):
+
+        for data in string_list:
+
+            if isinstance(data, dict):
+
+                username = sanitize_username(
+                    data.get("value")
+                    or
+                    data.get("username")
+                )
+
+
+                if username:
+
+                    return username
+
+
+
+    return None
+
+
+
+
+def extract_timestamp(item):
+
+
+    if not isinstance(item, dict):
+
+        return 0
+
+
+
+    string_list = item.get(
+        "string_list_data",
+        []
+    )
+
+
+
+    if isinstance(string_list, list):
+
+        for data in string_list:
+
+            if isinstance(data, dict):
+
+                return safe_timestamp(
+                    data.get(
+                        "timestamp",
+                        0
+                    )
+                )
+
+
+    return 0
+
+
+
+
+
+def detect_json_type(
+        filename,
+        data
+):
+
+
+    name = filename.lower()
+
+
+
+    # Following
+
+    if (
+        "following" in name
+        or
+        (
+            isinstance(data, dict)
+            and
+            "relationships_following"
+            in data
+        )
+    ):
+
+        return "following"
+
+
+
+    # Followers
+
+    if "follower" in name:
+
+        return "followers"
+
+
+
+    return None
+
+
+
+
+
+def read_following_data(data):
+
+
+    results = []
+
+
+
+    if isinstance(data, dict):
+
+
+        if (
+            "relationships_following"
+            in data
+        ):
+
+            results = data.get(
+                "relationships_following",
+                []
+            )
+
+
+        else:
+
+
+            for key,value in data.items():
+
+
+                if (
+                    "following"
+                    in key.lower()
+                    and
+                    isinstance(value,list)
+                ):
+
+                    results = value
+
+                    break
+
+
+
+    elif isinstance(data,list):
+
+        results = data
+
+
+
+    return results
+
+
+
+
+
+def read_followers_data(data):
+
+
+    results = []
+
+
+
+    if isinstance(data,list):
+
+        return data
+
+
+
+    if isinstance(data,dict):
+
+
+        for key,value in data.items():
+
+            if isinstance(value,list):
+
+                results = value
+
+                break
+
+
+
+    return results
+
+
+
+
+
+
+def analyze_instagram_zip(zip_path):
+
+
+    followers = {}
+
+    following = {}
+
+
+    checked_files = 0
+
+    skipped_files = []
+
+
+
+    with zipfile.ZipFile(
+        zip_path,
+        "r"
+    ) as archive:
+
+
+
+        for info in archive.infolist():
+
+
+            if info.is_dir():
+
+                continue
+
+
+
+            if not info.filename.lower().endswith(
+                ".json"
+            ):
+
+                continue
+
+
+
+            checked_files += 1
+
+
+
+            try:
+
+
+                with archive.open(info) as file:
+
+
+                    data = json.load(file)
+
+
+
+                json_depth(data)
+
+
+
+                file_type = detect_json_type(
+                    info.filename,
+                    data
+                )
+
+
+
+                if file_type == "following":
+
+
+
+                    items = read_following_data(
+                        data
+                    )
+
+
+
+                    for item in items:
+
+
+                        username = extract_username(
+                            item
+                        )
+
+
+                        if username:
+
+
+                            following[username] = {
+
+
+                                "username":
+                                    username,
+
+
+                                "timestamp":
+                                    extract_timestamp(
+                                        item
+                                    ),
+
+
+                                "source_file":
+                                    os.path.basename(
+                                        info.filename
+                                    )
+
+                            }
+
+
+
+
+                elif file_type == "followers":
+
+
+
+                    items = read_followers_data(
+                        data
+                    )
+
+
+
+                    for item in items:
+
+
+                        username = extract_username(
+                            item
+                        )
+
+
+                        if username:
+
+
+                            followers[username] = {
+
+
+                                "username":
+                                    username,
+
+
+                                "timestamp":
+                                    extract_timestamp(
+                                        item
+                                    ),
+
+
+                                "source_file":
+                                    os.path.basename(
+                                        info.filename
+                                    )
+
+                            }
+
+
+
+                else:
+
+
+                    skipped_files.append({
+
+                        "file":
+                            info.filename,
+
+
+                        "reason":
+                            "Instagram kullanıcı verisi değil."
+
+                    })
+
+
+
+            except Exception as error:
+
+
+                skipped_files.append({
+
+                    "file":
+                        info.filename,
+
+
+                    "reason":
+                        str(error)
+
+                })
+
+
+
+
+
+    if not followers:
+
+
+        raise ValueError(
+            "Takipçi verisi bulunamadı."
+        )
+
+
+
+    if not following:
+
+
+        raise ValueError(
+            "Takip edilen verisi bulunamadı."
+        )
+
+
+
+
+    followers_set = set(
+        followers.keys()
+    )
+
+
+    following_set = set(
+        following.keys()
+    )
+
+
+
+    not_following_back = (
+
+        following_set
+        -
+        followers_set
+
+    )
+
+
+    fans = (
+
+        followers_set
+        -
+        following_set
+
+    )
+
+
+    mutual = (
+
+        followers_set
+        &
+        following_set
+
+    )
+
+
+
+    report = create_analysis_report(
+
+        checked_files,
+
+        skipped_files,
+
+        len(followers),
+
+        len(following)
+
+    )
+
+
+
+
+    return {
+
+
+        "stats":{
+
+
+            "followers_count":
+                len(followers),
+
+
+            "following_count":
+                len(following),
+
+
+            "not_following_back_count":
+                len(not_following_back),
+
+
+            "fans_count":
+                len(fans),
+
+
+            "mutual_count":
+                len(mutual)
+
+        },
+
+
+
+        "results":{
+
+
+            "followers":
+                list(
+                    followers.values()
+                ),
+
+
+
+            "following":
+                list(
+                    following.values()
+                ),
+
+
+
+            "not_following_back":
+                [
+                    following[x]
+                    for x in sorted(
+                        not_following_back
+                    )
+                ],
+
+
+
+            "fans":
+                [
+                    followers[x]
+                    for x in sorted(
+                        fans
+                    )
+                ],
+
+
+
+            "mutual":
+                [
+                    followers[x]
+                    for x in sorted(
+                        mutual
+                    )
+                ]
+
+        },
+
+
+
+        "analysis_report":
+            report
+
+    }
+
+# ============================================================
+# ARŞİV KAYDETME
+# ============================================================
+
+
+def save_archive(
+        result,
+        filename
+):
+
+
+    archive_id = uuid.uuid4().hex
+
+    created_at = int(
+        time.time()
+    )
+
+
+    stats = result["stats"]
+
+
+
+    with get_db() as db:
+
+
+        db.execute(
+            """
+            INSERT INTO archives
+            (
+                id,
+                created_at,
+                original_filename,
+
+                followers_count,
+                following_count,
+
+                not_following_back_count,
+                fans_count,
+
+                mutual_count,
+                long_term_count
+
+            )
+
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+            """,
+            (
+
+                archive_id,
+
+                created_at,
+
+                filename,
+
+
+                stats["followers_count"],
+
+                stats["following_count"],
+
+
+                stats["not_following_back_count"],
+
+                stats["fans_count"],
+
+
+                stats["mutual_count"],
+
+                0
+
+            )
+        )
+
+
+
+        for relation, users in [
+
+            (
+                "followers",
+                result["results"]["followers"]
+            ),
+
+            (
+                "following",
+                result["results"]["following"]
+            ),
+
+            (
+                "mutual",
+                result["results"]["mutual"]
+            ),
+
+            (
+                "fans",
+                result["results"]["fans"]
+            ),
+
+            (
+                "not_following_back",
+                result["results"]["not_following_back"]
+            )
+
+        ]:
+
+
+            for user in users:
+
+
+                db.execute(
+
+                    """
+                    INSERT OR IGNORE INTO archive_users
+
+                    (
+                        archive_id,
+                        username,
+                        relation,
+                        timestamp,
+                        source_file
+                    )
+
+                    VALUES
+                    (
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?
+                    )
+
+                    """,
+
+                    (
+
+                        archive_id,
+
+                        user["username"],
+
+                        relation,
+
+                        user.get(
+                            "timestamp",
+                            0
+                        ),
+
+                        user.get(
+                            "source_file"
+                        )
+
+                    )
+
+                )
+
+
+
+        db.commit()
+
+
+
+    return archive_id
+
+
+
+
+
+# ============================================================
+# ZIP ANALİZ API
+# ============================================================
+
+
+@app.post(
+    "/api/arsivle"
+)
+
+def upload_archive():
+
+
+    client_ip = (
+
+        request.headers.get(
+            "X-Forwarded-For",
+            request.remote_addr
+        )
+
+        .split(",")[0]
+
+        .strip()
+
+    )
+
+
+
+    if not check_rate_limit(
+        client_ip
+    ):
+
+        return error_response(
+
+            "Çok fazla istek gönderildi.",
+
+            429
+
+        )
+
+
+
+
+    if (
+        "instagram_archive"
+        not in request.files
+    ):
+
+        return error_response(
+
+            "ZIP dosyası bulunamadı."
+
+        )
+
+
+
+
+    file = request.files[
+        "instagram_archive"
+    ]
+
+
+
+    if not file.filename:
+
+        return error_response(
+
+            "Dosya seçilmedi."
+
+        )
+
+
+
+    filename = secure_filename(
+        file.filename
+    )
+
+
+
+    if not filename.lower().endswith(
+        ".zip"
+    ):
+
+        return error_response(
+
+            "Sadece ZIP dosyası kabul edilir."
+
+        )
+
+
+
+    zip_path = (
+
+        BASE_FOLDER
+
+        /
+
+        (
+            uuid.uuid4().hex
+
+            +
+
+            "_"
+
+            +
+
+            filename
+
+        )
+
+    )
+
+
+
+    try:
+
+
+        file.save(
+            zip_path
+        )
+
+
+
+        validate_zip(
+            zip_path
+        )
+
+
+
+        result = analyze_instagram_zip(
+
+            zip_path
+
+        )
+
+
+
+        archive_id = save_archive(
+
+            result,
+
+            filename
+
+        )
+
+
+
+        result["archive_id"] = archive_id
+
+
+
+        return success_response(
+
+            result
+
+        )
+
+
+
+
+    except ValueError as e:
+
+
+        return error_response(
+
+            str(e)
+
+        )
+
+
+
+    except Exception as e:
+
+
+        logger.exception(
+            "Analiz hatası"
+        )
+
+
+        return error_response(
+
+            "Beklenmeyen sunucu hatası.",
+
+            500,
+
+            str(e)
+
+        )
+
+
+
+    finally:
+
+
+        if zip_path.exists():
+
+            try:
+
+                zip_path.unlink()
+
+            except:
+
+                pass
+
+
+
+
+
+
+# ============================================================
+# ARŞİV LİSTELEME
+# ============================================================
+
+
+@app.get(
+    "/api/arsivler"
+)
+
+def get_archives():
+
+
+    try:
+
+
+        with get_db() as db:
+
+
+            rows = db.execute(
+
+                """
+                SELECT *
+
+                FROM archives
+
+                ORDER BY created_at DESC
+
+                """
+
+            ).fetchall()
+
+
+
+        return success_response(
+
+            [
+                dict(row)
+
+                for row in rows
+            ]
+
+        )
+
+
+
+    except Exception:
+
+
+        return error_response(
+
+            "Arşivler okunamadı.",
+
+            500
+
+        )
+
+
+
+
+
+
+# ============================================================
+# ARŞİV KARŞILAŞTIRMA
+# ============================================================
+
+
+
+@app.get(
+
+"/api/arsiv/<old_id>/karsilastir/<new_id>"
+
+)
+
+def compare_archive(
+
+        old_id,
+
+        new_id
+
+):
+
+
+    try:
+
+
+        with get_db() as db:
+
+
+            old_users = db.execute(
+
+                """
+
+                SELECT username
+
+                FROM archive_users
+
+                WHERE archive_id = ?
+
+                AND relation='followers'
+
+                """,
+
+                (old_id,)
+
+            ).fetchall()
+
+
+
+            new_users = db.execute(
+
+                """
+
+                SELECT username
+
+                FROM archive_users
+
+                WHERE archive_id = ?
+
+                AND relation='followers'
+
+                """,
+
+                (new_id,)
+
+            ).fetchall()
+
+
+
+        old_set = {
+
+            x["username"]
+
+            for x in old_users
+
+        }
+
+
+
+        new_set = {
+
+            x["username"]
+
+            for x in new_users
+
+        }
+
+
+
+        return success_response(
+
+            {
+
+                "new_followers":
+
+                    sorted(
+
+                        list(
+                            new_set-old_set
+                        )
+
+                    ),
+
+
+                "lost_followers":
+
+                    sorted(
+
+                        list(
+                            old_set-new_set
+                        )
+
+                    )
+
+            }
+
+        )
+
+
+
+    except Exception:
+
+
+        return error_response(
+
+            "Karşılaştırma yapılamadı.",
+
+            500
+
+        )
+
+
+
+
+
+# ============================================================
+# SERVER
+# ============================================================
+
+
+if __name__ == "__main__":
+
+
+    app.run(
+
+        host="127.0.0.1",
+
+        port=5000,
+
+        debug=False
+
+    )

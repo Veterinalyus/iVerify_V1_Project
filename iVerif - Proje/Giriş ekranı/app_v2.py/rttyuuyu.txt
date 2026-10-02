@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+iVerify - Instagram Meta Analiz
+</title>
+
+
+<style>
+
+*{
+
+    box-sizing:border-box;
+
+    margin:0;
+
+    padding:0;
+
+    font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+}
+
+
+body{
+
+    background:#0f172a;
+
+    color:#f8fafc;
+
+    min-height:100vh;
+
+}
+
+
+
+.container{
+
+    width:95%;
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:25px;
+
+}
+
+
+
+.header{
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.header h1{
+
+    font-size:42px;
+
+}
+
+
+
+.header p{
+
+    color:#94a3b8;
+
+    margin-top:10px;
+
+}
+
+
+
+
+
+
+.card{
+
+    background:#1e293b;
+
+    border:1px solid #334155;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+
+
+
+
+/* UPLOAD */
+
+
+.upload-area{
+
+
+    border:2px dashed #475569;
+
+    padding:45px;
+
+    text-align:center;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+
+}
+
+
+
+.upload-area:hover{
+
+
+    border-color:#3b82f6;
+
+
+}
+
+
+
+input[type=file]{
+
+    display:none;
+
+}
+
+
+
+
+
+button{
+
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+
+}
+
+
+
+button:hover{
+
+
+    opacity:.85;
+
+
+}
+
+
+
+
+
+
+
+/* DASHBOARD */
+
+
+.dashboard{
+
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(
+        auto-fit,
+        minmax(180px,1fr)
+    );
+
+    gap:15px;
+
+
+}
+
+
+
+.stat-card{
+
+
+    background:#111827;
+
+    padding:20px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+
+}
+
+
+
+.stat-card h2{
+
+
+    font-size:32px;
+
+
+}
+
+
+
+.stat-card span{
+
+
+    color:#94a3b8;
+
+
+}
+
+
+
+
+
+
+
+/* MENU */
+
+
+.menu{
+
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+.menu button{
+
+
+    background:#334155;
+
+
+}
+
+
+
+.menu button.active{
+
+
+    background:#2563eb;
+
+
+}
+
+
+
+
+
+
+
+
+/* SEARCH */
+
+
+.search{
+
+
+    width:100%;
+
+    padding:14px;
+
+    background:#111827;
+
+    color:white;
+
+    border:1px solid #334155;
+
+    border-radius:8px;
+
+    margin-bottom:15px;
+
+
+}
+
+
+
+
+
+
+/* USER LIST */
+
+
+.user-list{
+
+
+    max-height:600px;
+
+    overflow:auto;
+
+
+}
+
+
+
+.user-row{
+
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px;
+
+    border-bottom:1px solid #334155;
+
+
+}
+
+
+
+.username{
+
+
+    cursor:pointer;
+
+}
+
+
+
+.profile-link{
+
+
+    color:white;
+
+    text-decoration:none;
+
+    background:#2563eb;
+
+    padding:7px 12px;
+
+    border-radius:7px;
+
+
+}
+
+
+
+
+
+
+.hidden{
+
+
+    display:none;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="container">
+
+
+
+<div class="header">
+
+
+<h1>
+iVerify
+</h1>
+
+
+<p>
+Instagram Meta Arşiv Analiz Motoru
+</p>
+
+
+</div>
+
+
+
+
+
+<!-- ZIP UPLOAD -->
+
+
+<div class="card">
+
+
+<h2>
+Meta ZIP Yükle
+</h2>
+
+
+<br>
+
+
+<label class="upload-area">
+
+
+<input
+type="file"
+id="zipFile"
+accept=".zip"
+/>
+
+
+<p>
+ZIP dosyanı seçmek için tıkla
+</p>
+
+
+<br>
+
+
+<button>
+Dosya Seç
+</button>
+
+
+</label>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- LOADING -->
+
+
+<div 
+class="card hidden"
+id="loading"
+>
+
+
+<h3>
+Analiz yapılıyor...
+</h3>
+
+
+<p>
+Meta dosyaları okunuyor.
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- RESULT -->
+
+
+<div
+class="card hidden"
+id="resultArea"
+>
+
+
+<h2>
+Analiz Sonucu
+</h2>
+
+
+<br>
+
+
+
+<div class="dashboard">
+
+
+
+<div class="stat-card">
+
+<h2 id="followersCount">
+0
+</h2>
+
+<span>
+Takipçi
+</span>
+
+</div>
+
+
+
+
+
+<div class="stat-card">
+
+<h2 id="followingCount">
+0
+</h2>
+
+<span>
+Takip Edilen
+</span>
+
+</div>
+
+
+
+
+
+<div class="stat-card">
+
+<h2 id="mutualCount">
+0
+</h2>
+
+<span>
+Ortak Takip
+</span>
+
+</div>
+
+
+
+
+
+<div class="stat-card">
+
+<h2 id="pendingCount">
+0
+</h2>
+
+<span>
+Bekleyen İstek
+</span>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- USERS -->
+
+
+<div
+class="card hidden"
+id="usersArea"
+>
+
+
+<h2>
+Kullanıcı Analizi
+</h2>
+
+
+<br>
+
+
+
+<div class="menu">
+
+
+
+<button
+class="active"
+data-type="mutual"
+>
+
+Ortak Takip
+
+</button>
+
+
+
+<button
+data-type="following_not_following_back"
+>
+
+Ben Takip Ediyorum
+O Etmiyor
+
+</button>
+
+
+
+<button
+data-type="followers_not_following"
+>
+
+Beni Takip Ediyor
+Ben Etmiyorum
+
+</button>
+
+
+
+<button
+data-type="pending_requests"
+>
+
+Bekleyen İstekler
+
+</button>
+
+
+
+<button
+data-type="received_requests"
+>
+
+Gelen İstekler
+
+</button>
+
+
+
+<button
+data-type="recent_requests"
+>
+
+Son İstekler
+
+</button>
+
+
+
+<button
+data-type="recently_unfollowed"
+>
+
+Takipten Çıkanlar
+
+</button>
+
+
+
+<button
+data-type="restricted"
+>
+
+Kısıtlı
+
+</button>
+
+
+
+<button
+data-type="blocked"
+>
+
+Engellenen
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<input
+
+class="search"
+
+id="searchBox"
+
+placeholder="Kullanıcı ara..."
+
+>
+
+
+
+
+<div
+class="user-list"
+id="userList"
+>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+<script>
+
+
+// =====================================================
+// iVerify Frontend Engine
+// PART 2 / 3
+// =====================================================
+
+
+
+const API_URL = "http://127.0.0.1:5000";
+
+
+
+let analysisData = null;
+
+
+let currentCategory = "mutual";
+
+
+let currentUsers = [];
+
+
+
+
+// -----------------------------------------------------
+// ZIP UPLOAD
+// -----------------------------------------------------
+
+
+
+document
+.getElementById("zipFile")
+.addEventListener(
+
+"change",
+
+function(e){
+
+
+    if(e.target.files.length){
+
+
+        uploadZIP(
+            e.target.files[0]
+        );
+
+
+    }
+
+
+}
+
+);
+
+
+
+
+
+
+
+async function uploadZIP(file){
+
+
+
+    let formData = new FormData();
+
+
+
+    formData.append(
+
+        "file",
+
+        file
+
+    );
+
+
+
+
+    document
+    .getElementById("loading")
+    .classList
+    .remove("hidden");
+
+
+
+
+
+    try{
+
+
+        let response = await fetch(
+
+            API_URL +
+
+            "/api/analyze",
+
+            {
+
+                method:"POST",
+
+                body:formData
+
+            }
+
+        );
+
+
+
+
+
+        let result = await response.json();
+
+
+
+
+        if(result.success){
+
+
+
+            analysisData = result.data;
+
+
+
+            showAnalysis(
+
+                analysisData
+
+            );
+
+
+
+        }
+
+
+        else{
+
+
+            alert(
+
+                result.error
+
+            );
+
+
+        }
+
+
+
+    }
+
+
+    catch(error){
+
+
+        alert(
+
+            "Python motoruna bağlanılamadı."
+
+        );
+
+
+        console.log(error);
+
+
+
+    }
+
+
+
+    finally{
+
+
+        document
+        .getElementById("loading")
+        .classList
+        .add("hidden");
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// SHOW ANALYSIS
+// -----------------------------------------------------
+
+
+
+function showAnalysis(data){
+
+
+
+    document
+    .getElementById("resultArea")
+    .classList
+    .remove("hidden");
+
+
+
+    document
+    .getElementById("usersArea")
+    .classList
+    .remove("hidden");
+
+
+
+
+
+
+    document
+    .getElementById("followersCount")
+    .innerText =
+
+    data.stats.followers;
+
+
+
+
+
+    document
+    .getElementById("followingCount")
+    .innerText =
+
+    data.stats.following;
+
+
+
+
+
+
+    document
+    .getElementById("mutualCount")
+    .innerText =
+
+    data.stats.mutual;
+
+
+
+
+
+
+    document
+    .getElementById("pendingCount")
+    .innerText =
+
+    data.stats.pending_requests;
+
+
+
+
+
+
+    changeCategory(
+
+        "mutual"
+
+    );
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// CATEGORY BUTTONS
+// -----------------------------------------------------
+
+
+
+document
+.querySelectorAll(".menu button")
+.forEach(
+
+function(button){
+
+
+
+button.addEventListener(
+
+"click",
+
+function(){
+
+
+
+document
+.querySelectorAll(".menu button")
+.forEach(
+
+btn =>
+
+btn.classList.remove(
+"active"
+)
+
+);
+
+
+
+this.classList.add(
+"active"
+);
+
+
+
+
+changeCategory(
+
+    this.dataset.type
+
+);
+
+
+
+}
+
+
+
+);
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// CHANGE CATEGORY
+// -----------------------------------------------------
+
+
+
+function changeCategory(type){
+
+
+
+currentCategory = type;
+
+
+
+if(!analysisData)
+return;
+
+
+
+
+currentUsers =
+
+analysisData.users[type]
+
+||
+[];
+
+
+
+
+
+renderUsers();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// USER LIST
+// -----------------------------------------------------
+
+
+
+function renderUsers(){
+
+
+
+let list =
+
+document
+.getElementById("userList");
+
+
+
+list.innerHTML = "";
+
+
+
+
+let searchText =
+
+document
+.getElementById("searchBox")
+.value
+.toLowerCase();
+
+
+
+
+
+
+let filtered =
+
+currentUsers.filter(
+
+user =>
+
+
+user.username
+
+.toLowerCase()
+
+.includes(
+
+searchText
+
+)
+
+
+);
+
+
+
+
+
+
+
+filtered.forEach(
+
+function(user){
+
+
+
+let row =
+
+document.createElement(
+"div"
+);
+
+
+
+row.className =
+"user-row";
+
+
+
+
+
+row.innerHTML = `
+
+
+<span
+
+class="username"
+
+onclick="showUser('${user.username}')"
+
+>
+
+@${user.username}
+
+</span>
+
+
+
+<a
+
+class="profile-link"
+
+href="${user.url}"
+
+target="_blank"
+
+>
+
+Instagram
+
+</a>
+
+
+
+`;
+
+
+
+
+
+list.appendChild(
+row
+);
+
+
+
+}
+
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// -----------------------------------------------------
+// SEARCH
+// -----------------------------------------------------
+
+
+
+document
+.getElementById("searchBox")
+.addEventListener(
+
+"input",
+
+function(){
+
+
+renderUsers();
+
+
+}
+
+);
+
+
+
+
+
+</script>
+<!-- =====================================================
+iVerify Frontend Engine
+PART 3 / 3
+DETAIL + COMPARISON
+===================================================== -->
+
+
+<style>
+
+
+.modal{
+
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    background:
+    rgba(0,0,0,.75);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+}
+
+
+
+.modal-box{
+
+
+    background:#1e293b;
+
+    width:420px;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    border:1px solid #334155;
+
+
+}
+
+
+
+.modal-box h2{
+
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+.info-row{
+
+
+    margin-bottom:12px;
+
+    color:#cbd5e1;
+
+
+}
+
+
+
+.close-btn{
+
+
+    background:#ef4444;
+
+    margin-top:20px;
+
+
+}
+
+
+
+</style>
+
+
+
+
+
+<!-- USER DETAIL MODAL -->
+
+
+<div
+class="modal"
+id="userModal"
+>
+
+
+<div
+class="modal-box"
+>
+
+
+<h2>
+Kullanıcı Detayı
+</h2>
+
+
+
+<div
+class="info-row"
+id="detailUsername"
+>
+</div>
+
+
+
+<div
+class="info-row"
+id="detailStatus"
+>
+</div>
+
+
+
+<div
+class="info-row"
+id="detailDate"
+>
+</div>
+
+
+
+<div
+class="info-row"
+id="detailSource"
+>
+</div>
+
+
+
+<a
+
+id="detailInstagram"
+
+target="_blank"
+
+class="profile-link"
+
+>
+
+Instagram Profili
+
+</a>
+
+
+
+
+<br>
+
+
+
+<button
+
+class="close-btn"
+
+onclick="closeModal()"
+
+>
+
+Kapat
+
+</button>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<script>
+
+
+
+
+
+// =====================================================
+// USER DETAIL
+// =====================================================
+
+
+
+
+function showUser(username){
+
+
+
+    let user =
+
+    currentUsers.find(
+
+        u =>
+
+        u.username === username
+
+    );
+
+
+
+
+    if(!user)
+
+        return;
+
+
+
+
+
+
+    document
+
+    .getElementById(
+
+        "detailUsername"
+
+    )
+
+    .innerHTML =
+
+    "<b>Kullanıcı:</b> @" +
+
+    user.username;
+
+
+
+
+
+
+
+    document
+
+    .getElementById(
+
+        "detailStatus"
+
+    )
+
+    .innerHTML =
+
+    "<b>Durum:</b> " +
+
+    (
+
+        user.status
+
+        ||
+
+        "Bilinmiyor"
+
+    );
+
+
+
+
+
+
+
+
+    let date =
+
+    "Veride bulunamadı";
+
+
+
+
+
+    if(user.timestamp){
+
+
+
+        date =
+
+        new Date(
+
+            user.timestamp * 1000
+
+        )
+
+        .toLocaleString();
+
+
+
+    }
+
+
+
+
+
+
+
+    document
+
+    .getElementById(
+
+        "detailDate"
+
+    )
+
+    .innerHTML =
+
+    "<b>Tarih:</b> " +
+
+    date;
+
+
+
+
+
+
+
+
+    document
+
+    .getElementById(
+
+        "detailSource"
+
+    )
+
+    .innerHTML =
+
+    "<b>Kaynak:</b> " +
+
+    (
+
+        user.source
+
+        ||
+
+        "Bilinmiyor"
+
+    );
+
+
+
+
+
+
+
+    document
+
+    .getElementById(
+
+        "detailInstagram"
+
+    )
+
+    .href =
+
+    user.url;
+
+
+
+
+
+
+
+    document
+
+    .getElementById(
+
+        "userModal"
+
+    )
+
+    .style.display =
+
+    "flex";
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function closeModal(){
+
+
+
+    document
+
+    .getElementById(
+
+        "userModal"
+
+    )
+
+    .style.display =
+
+    "none";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// ARCHIVE COMPARISON READY
+// =====================================================
+
+
+
+
+async function compareArchives(
+
+oldArchive,
+
+newArchive
+
+){
+
+
+
+    try{
+
+
+
+        let response =
+
+        await fetch(
+
+            API_URL +
+
+            "/api/compare/" +
+
+            oldArchive +
+
+            "/" +
+
+            newArchive
+
+        );
+
+
+
+
+
+        let result =
+
+        await response.json();
+
+
+
+
+
+        return result;
+
+
+
+    }
+
+    catch(error){
+
+
+
+        console.log(error);
+
+
+
+        return null;
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+// =====================================================
+// SORT SYSTEM READY
+// =====================================================
+
+
+
+
+function sortUsers(mode){
+
+
+
+    if(!currentUsers)
+
+        return;
+
+
+
+
+
+    if(mode==="az"){
+
+
+
+        currentUsers.sort(
+
+            (a,b)=>
+
+            a.username.localeCompare(
+
+                b.username
+
+            )
+
+        );
+
+
+
+    }
+
+
+
+
+
+    if(mode==="za"){
+
+
+
+        currentUsers.sort(
+
+            (a,b)=>
+
+            b.username.localeCompare(
+
+                a.username
+
+            )
+
+        );
+
+
+
+    }
+
+
+
+
+
+    renderUsers();
+
+
+
+}
+
+
+
+
+
+
+</script>
+
+
+</body>
+
+</html>

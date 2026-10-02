@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+iVerify - Instagram Meta Analiz Sistemi
+</title>
+
+
+<style>
+
+
+:root {
+
+    --bg:
+    #0f172a;
+
+    --card:
+    #1e293b;
+
+    --border:
+    #334155;
+
+    --text:
+    #f8fafc;
+
+    --muted:
+    #94a3b8;
+
+    --accent:
+    #3b82f6;
+
+}
+
+
+* {
+
+    box-sizing:border-box;
+
+    margin:0;
+
+    padding:0;
+
+    font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+}
+
+
+
+body {
+
+    background:
+    var(--bg);
+
+    color:
+    var(--text);
+
+    min-height:100vh;
+
+}
+
+
+
+.container {
+
+    max-width:1200px;
+
+    margin:auto;
+
+    padding:25px;
+
+}
+
+
+
+header {
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+}
+
+
+
+header h1 {
+
+    font-size:40px;
+
+}
+
+
+
+header p {
+
+    color:
+    var(--muted);
+
+    margin-top:10px;
+
+}
+
+
+
+/* CARDS */
+
+
+.card {
+
+    background:
+    var(--card);
+
+    border:
+    1px solid var(--border);
+
+    border-radius:15px;
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+
+/* UPLOAD */
+
+
+.upload-box {
+
+
+    border:
+    2px dashed var(--border);
+
+    padding:40px;
+
+    text-align:center;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+}
+
+
+
+.upload-box:hover {
+
+
+    border-color:
+    var(--accent);
+
+}
+
+
+
+input[type=file] {
+
+    display:none;
+
+}
+
+
+
+.btn {
+
+
+    background:
+    var(--accent);
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    margin-top:15px;
+
+}
+
+
+
+
+
+/* ANALYSIS */
+
+
+.stats {
+
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(
+        auto-fit,
+        minmax(180px,1fr)
+    );
+
+    gap:15px;
+
+}
+
+
+
+
+.stat {
+
+
+    background:
+    rgba(
+        255,
+        255,
+        255,
+        .05
+    );
+
+    padding:20px;
+
+    text-align:center;
+
+    border-radius:12px;
+
+
+}
+
+
+
+
+.stat h2 {
+
+
+    font-size:30px;
+
+}
+
+
+
+.stat p {
+
+
+    color:
+    var(--muted);
+
+}
+
+
+
+
+/* TABS */
+
+
+.tabs {
+
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.tab {
+
+
+    padding:10px 15px;
+
+    border:
+    1px solid var(--border);
+
+    background:none;
+
+    color:white;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+
+
+.tab.active {
+
+
+    background:
+    var(--accent);
+
+}
+
+
+
+
+/* SEARCH */
+
+
+.search-box {
+
+
+    width:100%;
+
+    padding:12px;
+
+    background:
+    #111827;
+
+    border:
+    1px solid var(--border);
+
+    color:white;
+
+    border-radius:8px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+
+
+/* USERS */
+
+
+.user-list {
+
+
+    max-height:500px;
+
+    overflow:auto;
+
+}
+
+
+
+.user-item {
+
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px;
+
+    border-bottom:
+    1px solid var(--border);
+
+}
+
+
+
+.user-name {
+
+
+    cursor:pointer;
+
+}
+
+
+
+.profile-btn {
+
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:6px 10px;
+
+    border:
+    1px solid var(--border);
+
+    border-radius:6px;
+
+}
+
+
+
+/* DETAIL */
+
+
+.modal {
+
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+    rgba(
+        0,
+        0,
+        0,
+        .7
+    );
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+
+.modal-content {
+
+
+    background:
+    var(--card);
+
+    padding:25px;
+
+    border-radius:15px;
+
+    width:400px;
+
+}
+
+
+
+/* HIDDEN */
+
+
+.hidden {
+
+
+    display:none;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="container">
+
+
+
+<header>
+
+
+<h1>
+iVerify
+</h1>
+
+
+<p>
+Meta Instagram Arşiv Analiz Sistemi
+</p>
+
+
+</header>
+
+
+
+
+
+<!-- UPLOAD -->
+
+
+<div class="card">
+
+
+<h2>
+Instagram Arşivi Yükle
+</h2>
+
+
+<br>
+
+
+<label
+class="upload-box"
+for="file-input"
+>
+
+
+<p>
+Meta Instagram ZIP dosyanızı seçin
+</p>
+
+
+<input
+type="file"
+id="file-input"
+accept=".zip"
+>
+
+
+<button
+class="btn"
+>
+Dosya Seç
+</button>
+
+
+</label>
+
+
+
+</div>
+
+
+
+
+
+<!-- LOADING -->
+
+
+<div
+class="card hidden"
+id="loading"
+>
+
+
+<h3>
+Analiz yapılıyor...
+</h3>
+
+
+<p>
+ZIP kontrol ediliyor,
+Meta verileri okunuyor.
+</p>
+
+
+</div>
+
+
+
+
+
+<!-- RESULT -->
+
+
+<div
+class="card hidden"
+id="results"
+>
+
+
+
+<h2>
+Analiz Sonucu
+</h2>
+
+
+<br>
+
+
+
+<div class="stats">
+
+
+
+<div class="stat">
+
+<h2 id="followers">
+0
+</h2>
+
+<p>
+Takipçi
+</p>
+
+</div>
+
+
+
+<div class="stat">
+
+<h2 id="following">
+0
+</h2>
+
+<p>
+Takip Edilen
+</p>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<h2 id="mutual">
+0
+</h2>
+
+<p>
+Ortak Takip
+</p>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<h2 id="pending">
+0
+</h2>
+
+<p>
+Bekleyen İstek
+</p>
+
+</div>
+
+
+
+</div>
+
+
+
+<br>
+
+
+
+<h2>
+Kullanıcı Analizi
+</h2>
+
+
+<br>
+
+
+
+<div class="tabs">
+
+
+<button
+class="tab active"
+data-tab="mutual"
+>
+Ortak Takipleşenler
+</button>
+
+
+
+<button
+class="tab"
+data-tab="following_not_following_back"
+>
+Ben Takip Ediyorum - O Etmiyor
+</button>
+
+
+
+<button
+class="tab"
+data-tab="followers_not_following"
+>
+Beni Takip Ediyor - Ben Etmiyorum
+</button>
+
+
+
+<button
+class="tab"
+data-tab="pending_requests"
+>
+Bekleyen İstekler
+</button>
+
+
+
+<button
+class="tab"
+data-tab="followers"
+>
+Tüm Takipçiler
+</button>
+
+
+
+<button
+class="tab"
+data-tab="following"
+>
+Tüm Takip Ettiklerim
+</button>
+
+
+
+</div>
+
+
+
+
+
+<input
+
+class="search-box"
+
+id="search"
+
+placeholder="Kullanıcı ara..."
+
+>
+
+
+
+
+<div
+class="user-list"
+id="user-list"
+>
+
+</div>
+
+
+
+</div>
+<script>
+
+
+let currentData = null;
+
+let currentCategory = "mutual";
+
+let currentUsers = [];
+
+
+
+
+
+const API =
+"http://127.0.0.1:5000";
+
+
+
+
+
+// =====================================================
+// ZIP UPLOAD
+// =====================================================
+
+
+
+document
+.getElementById("file-input")
+.addEventListener(
+"change",
+function(e){
+
+
+    if(
+        e.target.files.length
+    ){
+
+        uploadArchive(
+            e.target.files[0]
+        );
+
+    }
+
+
+});
+
+
+
+
+
+
+
+async function uploadArchive(file){
+
+
+
+    let form =
+    new FormData();
+
+
+
+    form.append(
+        "instagram_archive",
+        file
+    );
+
+
+
+    document
+    .getElementById("loading")
+    .classList
+    .remove("hidden");
+
+
+
+    try{
+
+
+        let response =
+        await fetch(
+
+            API +
+            "/api/arsivle",
+
+            {
+
+                method:"POST",
+
+                body:form
+
+            }
+
+        );
+
+
+
+        let json =
+        await response.json();
+
+
+
+        if(
+            json.success
+        ){
+
+
+            currentData =
+            json.data;
+
+
+
+            showResults(
+                currentData
+            );
+
+
+        }
+
+        else{
+
+
+            alert(
+                json.error
+            );
+
+        }
+
+
+
+    }
+
+    catch(error){
+
+
+        alert(
+            "Sunucu bağlantısı kurulamadı."
+        );
+
+
+    }
+
+
+
+    finally{
+
+
+        document
+        .getElementById("loading")
+        .classList
+        .add("hidden");
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// SHOW RESULTS
+// =====================================================
+
+
+
+function showResults(data){
+
+
+
+    document
+    .getElementById("results")
+    .classList
+    .remove("hidden");
+
+
+
+
+    document
+    .getElementById("followers")
+    .innerText =
+    data.stats.followers;
+
+
+
+    document
+    .getElementById("following")
+    .innerText =
+    data.stats.following;
+
+
+
+    document
+    .getElementById("mutual")
+    .innerText =
+    data.stats.mutual;
+
+
+
+    document
+    .getElementById("pending")
+    .innerText =
+    data.stats.pending_requests;
+
+
+
+
+    changeCategory(
+        "mutual"
+    );
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// TAB SYSTEM
+// =====================================================
+
+
+
+document
+.querySelectorAll(".tab")
+.forEach(
+
+function(button){
+
+
+
+button.addEventListener(
+
+"click",
+
+function(){
+
+
+
+document
+.querySelectorAll(".tab")
+.forEach(
+
+b =>
+b.classList.remove(
+"active"
+)
+
+);
+
+
+
+this.classList.add(
+"active"
+);
+
+
+
+
+changeCategory(
+this.dataset.tab
+);
+
+
+
+}
+
+
+
+);
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+function changeCategory(category){
+
+
+
+currentCategory =
+category;
+
+
+
+if(
+!currentData
+||
+!currentData.users
+)
+return;
+
+
+
+currentUsers =
+currentData
+.users
+[category]
+||
+[];
+
+
+
+
+renderUsers();
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// USER LIST
+// =====================================================
+
+
+
+function renderUsers(){
+
+
+
+let container =
+document
+.getElementById(
+"user-list"
+);
+
+
+
+container.innerHTML="";
+
+
+
+let search =
+document
+.getElementById(
+"search"
+)
+.value
+.toLowerCase();
+
+
+
+
+let filtered =
+
+currentUsers.filter(
+
+user =>
+
+user.username
+.toLowerCase()
+.includes(search)
+
+);
+
+
+
+
+
+filtered.forEach(
+
+function(user){
+
+
+
+let row =
+document.createElement(
+"div"
+);
+
+
+
+row.className =
+"user-item";
+
+
+
+
+row.innerHTML = `
+
+
+<span
+class="user-name"
+onclick="showDetail('${user.username}')"
+>
+
+@${user.username}
+
+</span>
+
+
+
+<a
+
+class="profile-btn"
+
+target="_blank"
+
+href="${user.instagram}"
+
+>
+
+Instagram
+
+</a>
+
+
+
+`;
+
+
+
+
+container.appendChild(
+row
+);
+
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// SEARCH
+// =====================================================
+
+
+
+document
+.getElementById("search")
+.addEventListener(
+
+"input",
+
+function(){
+
+renderUsers();
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================================
+// USER DETAIL
+// =====================================================
+
+
+
+function showDetail(username){
+
+
+
+let user =
+
+currentUsers.find(
+
+u =>
+u.username === username
+
+);
+
+
+
+if(!user)
+return;
+
+
+
+
+alert(
+
+"@" +
+user.username +
+
+"\n\n" +
+
+"Kaynak:\n" +
+
+(user.source || "Bilinmiyor")
+
++
+
+"\n\nTarih:\n"
+
++
+
+(
+
+user.timestamp
+?
+new Date(
+user.timestamp * 1000
+)
+.toLocaleString()
+
+:
+
+"Veride bulunamadı"
+
+)
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================================
+// FUTURE COMPARISON READY
+// =====================================================
+
+
+
+async function compareArchives(
+oldId,
+newId
+){
+
+
+
+try{
+
+
+let response =
+
+await fetch(
+
+API +
+
+"/api/karsilastir/"
+
++
+
+oldId
+
++
+
+"/"
+
++
+
+newId
+
+);
+
+
+
+return await response.json();
+
+
+
+}
+
+catch(e){
+
+
+console.log(e);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+</script>
+
+
+</body>
+
+</html>
