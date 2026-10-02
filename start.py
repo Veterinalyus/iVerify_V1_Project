@@ -1,27 +1,19 @@
+# =====================================================
+# iVerify V2 - Launcher
+# Sosyal Medya Veri Analiz Motoru
+# =====================================================
+
 import subprocess
-import time
-import webbrowser
 import sys
-import os
 
 
-def main():
-
-    base = os.path.dirname(os.path.abspath(__file__))
-
-    app_file = os.path.join(base, "app_final.py")
-
-    subprocess.Popen(
-        [sys.executable, app_file],
-        cwd=base
-    )
-
-    time.sleep(3)
-
-    webbrowser.open(
-        "http://127.0.0.1:5000"
+def start_iverify():
+    print("iVerify V2 başlatılıyor...")
+    
+    subprocess.run(
+        [sys.executable, "app.py"]
     )
 
 
 if __name__ == "__main__":
-    main()
+    start_iverify()

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<h2>
+Analiz Sonucu
+</h2>
+
+
+{% if result %}
+
+
+<h3>
+Durum:
+{{ result.status }}
+</h3>
+
+
+<hr>
+
+
+<h3>
+Instagram Verileri
+</h3>
+
+
+<p>
+Toplam kullanıcı:
+{{ result.audit.total_users }}
+</p>
+
+
+
+<h3>
+İlişki Analizi
+</h3>
+
+
+<h4>
+Geri takip etmeyenler
+</h4>
+
+
+<ul>
+
+{% for user in result.relationships.not_following_back %}
+
+<li>
+
+{{ user.username }}
+
+<br>
+
+{{ user.reason }}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+
+
+<h4>
+Sadece takip edenler
+</h4>
+
+
+<ul>
+
+{% for user in result.relationships.followers_only %}
+
+<li>
+
+{{ user.username }}
+
+<br>
+
+{{ user.reason }}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+
+
+<h4>
+Karşılıklı takipler
+</h4>
+
+
+<ul>
+
+{% for user in result.relationships.mutual_followers %}
+
+<li>
+
+{{ user.username }}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+
+{% else %}
+
+
+<p>
+Henüz analiz sonucu yok.
+</p>
+
+
+{% endif %}
+
+
+{% endblock %}
