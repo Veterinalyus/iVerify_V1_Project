@@ -1,0 +1,254 @@
+[
+  {
+    "timestamp": 1785043736,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1785043736
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18453112852186571"
+  },
+  {
+    "timestamp": 1779473906,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1779473913
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18441599974186571"
+  },
+  {
+    "timestamp": 1786312938,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786312942
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18422724097186571"
+  },
+  {
+    "timestamp": 1786376471,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786376473
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18419640253186571"
+  },
+  {
+    "timestamp": 1783689096,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1783689101
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18387668917186571"
+  },
+  {
+    "timestamp": 1786201115,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786201117
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18378514231186571"
+  },
+  {
+    "timestamp": 1786298896,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786298906
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18369429445186571"
+  },
+  {
+    "timestamp": 1785270449,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1785270451
+      },
+      {
+        "dict": [
+          
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18329671030186571"
+  },
+  {
+    "timestamp": 1786298140,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786298141
+      },
+      {
+        "dict": [
+          {
+            "dict": [
+              {
+                "label": "\u00c4\u00b0\u00c5\u009flem",
+                "value": "Yan\u00c4\u00b1tla"
+              },
+              {
+                "label": "Cevap",
+                "value": "appealing"
+              },
+              {
+                "label": "Reklam kategorisi",
+                "value": ""
+              },
+              {
+                "label": "G\u00c3\u00b6r\u00c3\u00bc\u00c5\u009f t\u00c3\u00bcr\u00c3\u00bc",
+                "value": "Daha fazla veya daha az"
+              },
+              {
+                "label": "Reklam t\u00c3\u00bcr\u00c3\u00bc",
+                "value": "Reels"
+              },
+              {
+                "label": "Reklam kategorisi",
+                "vec": [
+                  
+                ]
+              },
+              {
+                "label": "Soru t\u00c3\u00bcr\u00c3\u00bc",
+                "value": "followup_question"
+              },
+              {
+                "label": "Kaynak"
+              },
+              {
+                "timestamp_value": 1785866243
+              }
+            ],
+            "title": ""
+          },
+          {
+            "dict": [
+              {
+                "label": "\u00c4\u00b0\u00c5\u009flem",
+                "value": "Yan\u00c4\u00b1tla"
+              },
+              {
+                "label": "Cevap",
+                "value": "Daha fazlas\u00c4\u00b1n\u00c4\u00b1 g\u00c3\u00b6r"
+              },
+              {
+                "label": "Reklam kategorisi",
+                "value": ""
+              },
+              {
+                "label": "G\u00c3\u00b6r\u00c3\u00bc\u00c5\u009f t\u00c3\u00bcr\u00c3\u00bc",
+                "value": "Daha fazla veya daha az"
+              },
+              {
+                "label": "Reklam t\u00c3\u00bcr\u00c3\u00bc",
+                "value": "Reels"
+              },
+              {
+                "label": "Reklam kategorisi",
+                "vec": [
+                  
+                ]
+              },
+              {
+                "label": "Soru t\u00c3\u00bcr\u00c3\u00bc",
+                "value": "main_question"
+              },
+              {
+                "label": "Kaynak"
+              },
+              {
+                "timestamp_value": 1785866240
+              }
+            ],
+            "title": ""
+          }
+        ],
+        "title": "Konular"
+      }
+    ],
+    "fbid": "18252473167186571"
+  }
+]

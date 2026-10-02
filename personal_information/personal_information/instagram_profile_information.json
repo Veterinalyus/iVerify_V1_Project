@@ -1,0 +1,71 @@
+{
+  "media": [
+    
+  ],
+  "label_values": [
+    {
+      "label": "Rehber Senkronizasyonu",
+      "value": "Do\u00c4\u009fru"
+    },
+    {
+      "label": "\u00c4\u00b0lk \u00c3\u009clke Kodu",
+      "value": "TR"
+    },
+    {
+      "label": "Son Giri\u00c5\u009f",
+      "timestamp_value": 1778452389
+    },
+    {
+      "label": "Son \u00c3\u0087\u00c4\u00b1k\u00c4\u00b1\u00c5\u009f",
+      "timestamp_value": 1762001971
+    },
+    {
+      "label": "\u00c4\u00b0lk Hikaye Zaman\u00c4\u00b1",
+      "timestamp_value": 1498357631
+    },
+    {
+      "label": "Canl\u00c4\u00b1 Video Payla\u00c5\u009ft\u00c4\u00b1",
+      "value": "Do\u00c4\u009fru"
+    },
+    {
+      "label": "E-posta adresinin son de\u00c4\u009fi\u00c5\u009ftirildi\u00c4\u009fi zaman",
+      "timestamp_value": 0
+    },
+    {
+      "label": "E-posta adresi de\u00c4\u009fi\u00c5\u009ftirme y\u00c3\u00b6ntemi"
+    },
+    {
+      "label": "E-posta adresi onaylama s\u00c3\u00bcrecinde g\u00c3\u00b6nderilen en son e-posta adresi",
+      "value": ""
+    },
+    {
+      "label": "Son Hikaye Zaman\u00c4\u00b1",
+      "timestamp_value": 1785858992
+    },
+    {
+      "label": "Profiline t\u00c4\u00b1klayarak bildirim rozetini en son temizledi\u00c4\u009fin zaman (kullan\u00c4\u00b1mdan kald\u00c4\u00b1r\u00c4\u00b1lm\u00c4\u00b1\u00c5\u009f \u00c3\u00b6zellik)",
+      "timestamp_value": 1516225208
+    },
+    {
+      "label": "Profilinin Facebook b\u00c3\u00b6l\u00c3\u00bcm\u00c3\u00bcne t\u00c4\u00b1klayarak bildirim rozetini en son temizledi\u00c4\u009fin zaman (kullan\u00c4\u00b1mdan kald\u00c4\u00b1r\u00c4\u00b1lm\u00c4\u00b1\u00c5\u009f \u00c3\u00b6zellik)",
+      "timestamp_value": 1516225206
+    },
+    {
+      "label": "\u00c4\u00b0lk Yak\u00c4\u00b1n Arkada\u00c5\u009flar Hikayesi Zaman\u00c4\u00b1",
+      "timestamp_value": 0
+    },
+    {
+      "label": "Sen giri\u00c5\u009f yapt\u00c4\u00b1ktan sonra bir e-postan\u00c4\u00b1n g\u00c3\u00b6nderildi\u00c4\u009fi en son zaman",
+      "timestamp_value": 0
+    },
+    {
+      "label": "Ar\u00c5\u009fivlenmi\u00c5\u009f Reels videolar\u00c4\u00b1n var m\u00c4\u00b1?",
+      "value": "Do\u00c4\u009fru"
+    },
+    {
+      "label": "Giri\u00c5\u009f yapma konusunda yard\u00c4\u00b1m i\u00c3\u00a7eren bir SMS g\u00c3\u00b6nderdi\u00c4\u009fimiz en son zaman",
+      "timestamp_value": 0
+    }
+  ],
+  "fbid": "17859418354186571"
+}

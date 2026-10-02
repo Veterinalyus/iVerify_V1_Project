@@ -1,0 +1,632 @@
+[
+  {
+    "timestamp": 1749054986,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Kanal yan\u00c4\u00b1t\u00c4\u00b1 be\u00c4\u009fenmeleri"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749054986
+      }
+    ],
+    "fbid": "1043665864542518"
+  },
+  {
+    "timestamp": 1749054984,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Kanal yan\u00c4\u00b1tlar\u00c4\u00b1"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749054984
+      }
+    ],
+    "fbid": "680703071506246"
+  },
+  {
+    "timestamp": 1749054981,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Kanal mesajlar\u00c4\u00b1"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749054982
+      }
+    ],
+    "fbid": "703921359165348"
+  },
+  {
+    "timestamp": 1749054979,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Kanal davetleri"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749054980
+      }
+    ],
+    "fbid": "1228428341589021"
+  },
+  {
+    "timestamp": 1749054977,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Grup istekleri"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749054978
+      }
+    ],
+    "fbid": "1588980242490213"
+  },
+  {
+    "timestamp": 1749054975,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "48"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749545543
+      }
+    ],
+    "fbid": "721851630245671"
+  },
+  {
+    "timestamp": 1749054972,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Instagram Direct"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Herkesten"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749545536
+      }
+    ],
+    "fbid": "2715693488630328"
+  },
+  {
+    "timestamp": 1749054969,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Instagram Direct istekleri"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1749054970
+      }
+    ],
+    "fbid": "1169053328355155"
+  },
+  {
+    "timestamp": 1742578669,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Y\u00c3\u00bcklemeler ve payla\u00c5\u009f\u00c4\u00b1m"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1742580243
+      }
+    ],
+    "fbid": "1378592923333069"
+  },
+  {
+    "timestamp": 1742578669,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Do\u00c4\u009fum G\u00c3\u00bcnleri"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1742580243
+      }
+    ],
+    "fbid": "1179850300448936"
+  },
+  {
+    "timestamp": 1742578669,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "\u00c3\u0087\u00c4\u00b1kartma yan\u00c4\u00b1tlar\u00c4\u00b1"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1742580243
+      }
+    ],
+    "fbid": "555978130227651"
+  },
+  {
+    "timestamp": 1740436010,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Senin i\u00c3\u00a7in \u00c3\u00b6nerilen g\u00c3\u00b6nderiler"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1740436027
+      }
+    ],
+    "fbid": "9633442530020767"
+  },
+  {
+    "timestamp": 1697914080,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Pop\u00c3\u00bcler yerler"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "18000106168995712"
+  },
+  {
+    "timestamp": 1697914078,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Destek talepleri"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "18014870218751213"
+  },
+  {
+    "timestamp": 1697914075,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "\u00c3\u009cr\u00c3\u00bcn duyurular\u00c4\u00b1 ve g\u00c3\u00b6r\u00c3\u00bc\u00c5\u009fler"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "17937759905642857"
+  },
+  {
+    "timestamp": 1697914073,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Hat\u00c4\u00b1rlatmalar"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "18018208273863049"
+  },
+  {
+    "timestamp": 1661843733,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Yak\u00c4\u00b1nlarda y\u00c3\u00bcklenen Reels videolar\u00c4\u00b1"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Herkesten"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "17942091719260264"
+  },
+  {
+    "timestamp": 1622520057,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Ba\u00c4\u009f\u00c4\u00b1\u00c5\u009f kampanyalar\u00c4\u00b1n"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "17845560191604301"
+  },
+  {
+    "timestamp": 1622520056,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Ba\u00c5\u009fkalar\u00c4\u00b1n\u00c4\u00b1n d\u00c3\u00bczenledi\u00c4\u009fi ba\u00c4\u009f\u00c4\u00b1\u00c5\u009f kampanyalar\u00c4\u00b1"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "17987379019362301"
+  },
+  {
+    "timestamp": 1622520036,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Tan\u00c4\u00b1nmayan giri\u00c5\u009fler"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Kapal\u00c4\u00b1"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "17908722337870685"
+  },
+  {
+    "timestamp": 1618011813,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Tercihler",
+        "dict": [
+          {
+            "label": "Kanal",
+            "value": "An\u00c4\u00b1nda ilet bildirimleri"
+          },
+          {
+            "label": "Bildirim t\u00c3\u00bcr\u00c3\u00bc",
+            "value": "Oldu\u00c4\u009fun foto\u00c4\u009fraflardaki be\u00c4\u009fenmeler ve yorumlar"
+          },
+          {
+            "label": "De\u00c4\u009fer",
+            "value": "Herkesten"
+          }
+        ]
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1732094095
+      }
+    ],
+    "fbid": "18163214122141040"
+  }
+]

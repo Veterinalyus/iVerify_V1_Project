@@ -1,0 +1,42 @@
+{
+  "account_history_registration_info": [
+    {
+      "title": "",
+      "media_map_data": {
+        
+      },
+      "string_map_data": {
+        "Kullan\u00c4\u00b1c\u00c4\u00b1 ad\u00c4\u00b1": {
+          "href": "",
+          "value": "\u00c5\u009e\u00c3\u00b6hret S\u00c4\u00b1\u00c3\u00a7an",
+          "timestamp": 0
+        },
+        "IP Adresi": {
+          "href": "",
+          "value": "78.186.110.252",
+          "timestamp": 0
+        },
+        "Zaman": {
+          "href": "",
+          "value": "",
+          "timestamp": 1498054409
+        },
+        "E-posta": {
+          "href": "",
+          "value": "fail003@outlook.com.tr",
+          "timestamp": 0
+        },
+        "Telefon Numaras\u00c4\u00b1": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Cihaz": {
+          "href": "",
+          "value": "D6603",
+          "timestamp": 0
+        }
+      }
+    }
+  ]
+}

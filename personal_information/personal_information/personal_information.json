@@ -1,0 +1,64 @@
+{
+  "profile_user": [
+    {
+      "title": "Kullan\u00c4\u00b1c\u00c4\u00b1 Bilgileri",
+      "media_map_data": {
+        "Profil Foto\u00c4\u009fraf\u00c4\u00b1": {
+          "uri": "media/posts/17908578402223382.jpg",
+          "creation_timestamp": 1778356169,
+          "media_metadata": {
+            "camera_metadata": {
+              "has_camera_metadata": false
+            }
+          },
+          "title": "",
+          "cross_post_source": {
+            "source_app": "FB"
+          }
+        }
+      },
+      "string_map_data": {
+        "Kullan\u00c4\u00b1c\u00c4\u00b1 ad\u00c4\u00b1": {
+          "href": "",
+          "value": "halil.tohumcu",
+          "timestamp": 0
+        },
+        "Ad": {
+          "href": "",
+          "value": "Halil",
+          "timestamp": 0
+        },
+        "Biyografi": {
+          "href": "",
+          "value": "\u00e2\u009a\u0095\u00ef\u00b8\u008fNSU\u00f0\u009f\u0087\u00a6\u00f0\u009f\u0087\u00bf Veterinarius \u00f0\u009f\u0090\u00bf\u00ef\u00b8\u008f",
+          "timestamp": 0
+        },
+        "Cinsiyet": {
+          "href": "",
+          "value": "male",
+          "timestamp": 0
+        },
+        "Do\u00c4\u009fum tarihi": {
+          "href": "",
+          "value": "1998-06-27",
+          "timestamp": 0
+        },
+        "Profilde m\u00c3\u00bczik": {
+          "href": "",
+          "value": "Music: \u00c4\u00b0htiya\u00c3\u00a7 Molas\u00c4\u00b1 - Ay. Caption: ",
+          "timestamp": 0
+        },
+        "Gizli Hesap": {
+          "href": "",
+          "value": "True",
+          "timestamp": 0
+        },
+        "Emoji Pong Y\u00c3\u00bcksek Puan\u00c4\u00b1": {
+          "href": "",
+          "value": "11",
+          "timestamp": 0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "account_history_imprecise_last_known_location": [
+    {
+      "title": "",
+      "media_map_data": {
+        
+      },
+      "string_map_data": {
+        "Kesin Olmayan Enlem": {
+          "href": "",
+          "value": "40.64727020263672",
+          "timestamp": 0
+        },
+        "Kesin Olmayan Boylam": {
+          "href": "",
+          "value": "29.619140625",
+          "timestamp": 0
+        },
+        "Kesin Enlem": {
+          "href": "",
+          "value": "40.69866180419922",
+          "timestamp": 0
+        },
+        "Kesin Boylam": {
+          "href": "",
+          "value": "29.651275634765625",
+          "timestamp": 0
+        },
+        "GPS Y\u00c3\u00bckleme Zaman\u00c4\u00b1": {
+          "href": "",
+          "value": "",
+          "timestamp": 1786384717
+        }
+      }
+    }
+  ]
+}

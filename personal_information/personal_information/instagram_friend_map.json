@@ -1,0 +1,115 @@
+{
+  "timestamp": 1765056912,
+  "media": [
+    
+  ],
+  "label_values": [
+    {
+      "label": "Payla\u00c5\u009f\u00c4\u00b1m hedef kitlesi",
+      "value": "Sadece sahip"
+    },
+    {
+      "label": "En son g\u00c3\u00b6r\u00c3\u00bcnmez oldu\u00c4\u009fun zaman",
+      "timestamp_value": 1784220153
+    },
+    {
+      "label": "Arkada\u00c5\u009f Haritas\u00c4\u00b1n\u00c4\u00b1 en son g\u00c3\u00b6r\u00c3\u00bcnt\u00c3\u00bcledi\u00c4\u009fin zaman",
+      "timestamp_value": 1785608658
+    },
+    {
+      "label": "Arkada\u00c5\u009f haritas\u00c4\u00b1 hedef kitleni en son g\u00c3\u00bcncelledi\u00c4\u009fin zaman",
+      "timestamp_value": 1784744498
+    },
+    {
+      "label": "Ge\u00c3\u00a7ici g\u00c3\u00b6r\u00c3\u00bcnmezli\u00c4\u009fin sona ermesi",
+      "timestamp_value": 0
+    },
+    {
+      "label": "Arkada\u00c5\u009f Haritas\u00c4\u00b1 ifadelerini en son g\u00c3\u00b6r\u00c3\u00bcnt\u00c3\u00bcledi\u00c4\u009fin zaman",
+      "timestamp_value": 0
+    },
+    {
+      "label": "Yakla\u00c5\u009f\u00c4\u00b1k konum kullan"
+    },
+    {
+      "dict": [
+        
+      ],
+      "title": "Mevcut gizli konum"
+    },
+    {
+      "dict": [
+        
+      ],
+      "title": "Gizlenen konumlar"
+    },
+    {
+      "dict": [
+        {
+          "dict": [
+            {
+              "label": "Ad",
+              "value": "friend_map_allowlist"
+            },
+            {
+              "label": "Simge",
+              "value": ""
+            },
+            {
+              "label": "Kaynak",
+              "value": ""
+            },
+            {
+              "label": "Yay\u00c4\u00b1nlanma zaman\u00c4\u00b1",
+              "timestamp_value": 0
+            },
+            {
+              "label": "Liste t\u00c3\u00bcr\u00c3\u00bc"
+            },
+            {
+              "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+              "timestamp_value": 1765056912
+            },
+            {
+              "dict": [
+                
+              ],
+              "title": "\u00c3\u009cyeler"
+            },
+            {
+              "dict": [
+                {
+                  "dict": [
+                    {
+                      "label": "\u00c4\u00b0nternet Adresi (URL)",
+                      "value": "https://www.linkedin.com/in/asiman-aliyev-06b22521b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
+                    },
+                    {
+                      "label": "Ad",
+                      "value": "\u00f0\u009d\u0093\u0090\u00f0\u009d\u0093\u00bc\u00f0\u009d\u0093\u00b2\u00f0\u009d\u0093\u00b6\u00f0\u009d\u0093\u00aa\u00f0\u009d\u0093\u00b7 \u00f0\u009d\u0093\u0090\u00f0\u009d\u0093\u00b5\u00f0\u009d\u0093\u00b2\u00f0\u009d\u0094\u0082\u00f0\u009d\u0093\u00ae\u00f0\u009d\u0093\u00bf"
+                    },
+                    {
+                      "label": "Kullan\u00c4\u00b1c\u00c4\u00b1 ad\u00c4\u00b1",
+                      "value": "asimanaliyev21"
+                    }
+                  ],
+                  "title": ""
+                }
+              ],
+              "title": "\u00c3\u009cyeler"
+            }
+          ],
+          "title": ""
+        }
+      ],
+      "title": "\u00c3\u0096zel liste"
+    },
+    {
+      "dict": [
+        
+      ],
+      "title": "Payla\u00c5\u009f\u00c4\u00b1m engellenenler listesi"
+    }
+  ],
+  "fbid": "17930957841077229"
+}

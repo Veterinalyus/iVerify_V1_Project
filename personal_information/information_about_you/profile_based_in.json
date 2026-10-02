@@ -1,0 +1,25 @@
+{
+  "media": [
+    
+  ],
+  "label_values": [
+    {
+      "label": "Konum",
+      "dict": [
+        {
+          "label": "\u00c3\u009clke",
+          "value": "Azerbaijan"
+        },
+        {
+          "label": "B\u00c3\u00b6lge",
+          "value": "Nakhchivan Autonomous Republic"
+        },
+        {
+          "label": "\u00c5\u009eehir",
+          "value": "Nakhchivan, Nakhchivan, Azerbaijan"
+        }
+      ]
+    }
+  ],
+  "fbid": "5631922570"
+}
