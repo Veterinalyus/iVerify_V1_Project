@@ -1,0 +1,86 @@
+[
+  {
+    "timestamp": 1681336660,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Mesaj",
+        "value": "In-app Message 1300821386776115"
+      },
+      {
+        "label": "T\u00c4\u00b1klama t\u00c3\u00bcr\u00c3\u00bc",
+        "value": "Primary Click"
+      },
+      {
+        "label": "Say\u00c4\u00b1",
+        "value": "1"
+      }
+    ],
+    "fbid": "1300821386776115:17841405597113990:pri"
+  },
+  {
+    "timestamp": 1681364509,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Mesaj",
+        "value": "In-app Message 1300821386776115"
+      },
+      {
+        "label": "T\u00c4\u00b1klama t\u00c3\u00bcr\u00c3\u00bc",
+        "value": "Secondary Click"
+      },
+      {
+        "label": "Say\u00c4\u00b1",
+        "value": "2"
+      }
+    ],
+    "fbid": "1300821386776115:17841405597113990:sec"
+  },
+  {
+    "timestamp": 1735159393,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Mesaj",
+        "value": "In-app Message 1012439806930145"
+      },
+      {
+        "label": "T\u00c4\u00b1klama t\u00c3\u00bcr\u00c3\u00bc",
+        "value": "Dismiss Click"
+      },
+      {
+        "label": "Say\u00c4\u00b1",
+        "value": "3"
+      }
+    ],
+    "fbid": "1012439806930145:17841405597113990:dis"
+  },
+  {
+    "timestamp": 1759775726,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Mesaj",
+        "value": "In-app Message 588121890480594"
+      },
+      {
+        "label": "T\u00c4\u00b1klama t\u00c3\u00bcr\u00c3\u00bc",
+        "value": "Dismiss Click"
+      },
+      {
+        "label": "Say\u00c4\u00b1",
+        "value": "3"
+      }
+    ],
+    "fbid": "588121890480594:17841405597113990:dis"
+  }
+]

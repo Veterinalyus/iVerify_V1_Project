@@ -1,0 +1,42 @@
+{
+  "timestamp": 1711063054,
+  "media": [
+    
+  ],
+  "label_values": [
+    {
+      "label": "Profil ili\u00c5\u009fkilendirme durumu",
+      "value": "Hesap ili\u00c5\u009fkilendirme devre d\u00c4\u00b1\u00c5\u009f\u00c4\u00b1 b\u00c4\u00b1rak\u00c4\u00b1ld\u00c4\u00b1"
+    },
+    {
+      "label": "Latest last activity time",
+      "timestamp_value": 1770999776
+    },
+    {
+      "label": "Combined number of times you've used these privacy settings",
+      "value": "3"
+    },
+    {
+      "label": "Number of times you used clear history settings",
+      "value": "2"
+    },
+    {
+      "label": "Profil ili\u00c5\u009fkilendirme ayarlar\u00c4\u00b1n\u00c4\u00b1 devre d\u00c4\u00b1\u00c5\u009f\u00c4\u00b1 b\u00c4\u00b1rakmay\u00c4\u00b1 ka\u00c3\u00a7 kez kulland\u00c4\u00b1\u00c4\u009f\u00c4\u00b1n",
+      "value": "1"
+    },
+    {
+      "label": "Profil ili\u00c5\u009fkilendirme ayarlar\u00c4\u00b1n\u00c4\u00b1 etkinle\u00c5\u009ftirmeyi ka\u00c3\u00a7 kez kulland\u00c4\u00b1\u00c4\u009f\u00c4\u00b1n",
+      "value": "0"
+    },
+    {
+      "label": "En son ve yakla\u00c5\u009fan profil ili\u00c5\u009fkilendirme durumlar\u00c4\u00b1n",
+      "dict": [
+        {
+          "label": "2026-02-14",
+          "value": "Hesap ili\u00c5\u009fkilendirme devre d\u00c4\u00b1\u00c5\u009f\u00c4\u00b1 b\u00c4\u00b1rak\u00c4\u00b1ld\u00c4\u00b1"
+        }
+      ]
+    }
+  ],
+  "fbid": "18329808787186571"
+}

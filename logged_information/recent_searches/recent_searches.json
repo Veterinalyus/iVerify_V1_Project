@@ -1,0 +1,104 @@
+[
+  {
+    "timestamp": 1786314693,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Arama sorgusu",
+        "value": "ecrin akkanat"
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786314693
+      }
+    ],
+    "fbid": "18622912456025831"
+  },
+  {
+    "timestamp": 1786314677,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Arama sorgusu",
+        "value": "ecrin_akkanat"
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786314677
+      }
+    ],
+    "fbid": "17942989080279713"
+  },
+  {
+    "timestamp": 1786314671,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Arama sorgusu",
+        "value": "ecrin_akkabat"
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786314671
+      }
+    ],
+    "fbid": "17986560270020614"
+  },
+  {
+    "timestamp": 1786278062,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Arama sorgusu",
+        "value": "ayselmrdl26"
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786278062
+      }
+    ],
+    "fbid": "18138635500585087"
+  },
+  {
+    "timestamp": 1786222293,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Arama sorgusu",
+        "value": "meloo1998"
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786222293
+      }
+    ],
+    "fbid": "18108219716029960"
+  },
+  {
+    "timestamp": 1786044577,
+    "media": [
+      
+    ],
+    "label_values": [
+      {
+        "label": "Arama sorgusu",
+        "value": "evlenmyecektik"
+      },
+      {
+        "label": "G\u00c3\u00bcncelleme zaman\u00c4\u00b1",
+        "timestamp_value": 1786044577
+      }
+    ],
+    "fbid": "18117506143922287"
+  }
+]
